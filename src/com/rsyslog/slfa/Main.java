@@ -1,6 +1,7 @@
 package com.rsyslog.slfa;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Main {
 
@@ -10,16 +11,23 @@ public class Main {
 		Config config = new Config();
 
 		configFile = System.getProperty("configfile");
+		if(configFile == null) {
+			configFile = System.getenv("LOGANONYMIZER_CONFIG");
+		}
 		if(configFile != null) {
 			config.setFilename(configFile);
 		}
 		
-		System.out.println("test: " + System.getProperty("test") + "     file: " + configFile);
-		
-		config.getTypes();
+		ArrayList<Type> typelist = config.getTypes();
+		if(typelist == null) {
+			return;
+		}
 		
 		for(int i = 0; i < args.length; i++) {
-			System.out.println("arg " + i + ": " + args[i]);
+			System.out.println("file " + (i + 1) + ": " + args[i]);
+			System.out.println();
+			LogFile current = new LogFile(args[i], typelist);
+			current.anon();
 		}
 		
 	}

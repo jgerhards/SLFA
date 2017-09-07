@@ -25,7 +25,6 @@ public class PropertyReader {
 				throw new FileNotFoundException("property file '" + filename + "' not found");
 			}
  
-			// get the property value and print it out
 			result = prop.getProperty(propName);
 
 			return result;
