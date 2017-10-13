@@ -1,0 +1,22 @@
+echo 'anonymizer=ipv4
+' > testconfig.properties
+
+echo 'no ip address
+1.1.172.3
+123' > testfile.txt
+
+java -jar -Dconfigfile=testconfig.properties ../slfa.jar testfile.txt > test.log
+
+echo 'no ip address
+1.1.0.0
+123' | cmp test.log
+if [ ! $? -eq 0 ]; then
+  echo "invalid response generated, test.log is:"
+  echo '====='
+  cat test.log
+  echo '====='
+  exit 1
+else
+  rm testconfig.properties
+  rm testfile.txt
+fi;

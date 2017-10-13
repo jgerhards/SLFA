@@ -1,0 +1,9 @@
+language: java
+
+script:
+  - javac src/com/rsyslog/slfa/*.java
+  - cd src
+  - jar -cmf ../manifest_main ../slfa.jar com/rsyslog/slfa/*.class
+  - cd ..
+  - cd tests
+  - ./testscript
