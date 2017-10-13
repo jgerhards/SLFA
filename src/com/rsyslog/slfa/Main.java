@@ -8,6 +8,8 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		String configFile;
 
+		System.err.println("slfa version 1. Copyright 2017 Jan Gerhards");
+		System.err.println("doc and more info: https://github.com/jgerhards/SLFA");
 		Config config = new Config();
 
 		configFile = System.getProperty("configfile");
