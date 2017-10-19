@@ -1,5 +1,6 @@
 package com.rsyslog.slfa;
 
+import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -19,40 +20,43 @@ public class Regex_Type extends Type{
 	private boolean keepSpChar;
 	Pattern match;
 	int end;
+	boolean cons;
+	Hashtable<String, StringBuffer> hash;
 
-	private void appendEnd(CurrMsg msg) {
-		int regexLen = msg.getNprocessed();
-		Random rand = msg.getRand();
-		int idx = msg.getCurrIdx();
+
+	private void randomizeRegex(String msg, int regexLen, Random rand, int idx, StringBuffer buff) {
 		char c;
-		boolean kept;
+		
+		for(int i = 0; i < regexLen; i++) {
+			c = msg.charAt(idx + i);
+			if(keepNum && c >= '0' && '9' >= c) {
+				buff.append(c);
+			} else if(keepChar && ((c >= 'a' && 'z' >= c) || (c >= 'A' && 'Z' >= c))) {
+					buff.append(c);
+			} else if(keepSpChar && !((c >= 'a' && 'z' >= c) || (c >= 'A' && 'Z' >= c) || (c >= '0' && '9' >= c))) {
+				buff.append(c);					
+			} else {
+				buff.append((char) (rand.nextInt((95)) + 32));						
+			}
+		}
+	}
+	
+	private void appendEnd(CurrMsg msg) {
 		
 		switch(mode) {
 		case RANDOM :
-			for(int i = 0; i < regexLen; i++) {
-				kept = false;
-				if(keepNum) {
-					c = msg.getMsgIn().charAt(idx + i);
-					if(c >= '0' && '9' >= c) {
-						kept = true;
-						msg.getMsgOut().append(c);
-					}
+			if(cons) {
+				String foundRegex = msg.getMsgIn().substring(msg.getCurrIdx(), msg.getCurrIdx() + msg.getNprocessed());
+				if(hash.containsKey(foundRegex)) {
+					msg.getMsgOut().append(hash.get(foundRegex));
+				} else {
+					StringBuffer anonRegex = new StringBuffer();
+					randomizeRegex(msg.getMsgIn(), msg.getNprocessed(), msg.getRand(), msg.getCurrIdx(), anonRegex);	
+					hash.put(foundRegex, anonRegex);
+					msg.getMsgOut().append(anonRegex);
 				}
-				if(keepChar) {
-					c = msg.getMsgIn().charAt(idx + i);
-					if(c >= 'a' && 'z' >= c) {
-						kept = true;
-						msg.getMsgOut().append(c);
-					}
-				}
-				if(!kept) {
-					if(keepSpChar) {
-						msg.getMsgOut().append(msg.getMsgIn().charAt(idx + i));
-						
-					} else {
-						msg.getMsgOut().append((char) (rand.nextInt((95)) + 32));						
-					}
-				}
+			} else {
+				randomizeRegex(msg.getMsgIn(), msg.getNprocessed(), msg.getRand(), msg.getCurrIdx(), msg.getMsgOut());
 			}
 			break;
 		case REPLACE:
@@ -89,6 +93,31 @@ public class Regex_Type extends Type{
 		}
 	}
 
+	private void getRandomConfig(Properties prop) {
+		mode = anonmode.RANDOM;
+		String var = prop.getProperty("regex[" + num + "].keep");
+		String[] split = var.split(" ");
+		int splitnum = split.length;
+
+		for(int i = 0; i < splitnum; i++) {
+			char lastChar = split[i].charAt(split[i].length() - 1);
+			while(lastChar == ',' || lastChar == ' ' || lastChar == ';') {
+				split[i] = split[i].substring(0, split[i].length() - 1);
+				split[i].trim();
+				lastChar = split[i].charAt(split[i].length() - 1);
+			}
+			if(split[i].compareTo("num") == 0) {
+				keepNum = true;
+			}
+			if(split[i].compareTo("char") == 0) {
+				keepChar = true;
+			}
+			if(split[i].compareTo("spchar") == 0) {
+				keepSpChar = true;
+			}
+		}		
+	}
+	
 	@Override
 	public void getConfig(Properties prop) {
 		String var;
@@ -109,30 +138,15 @@ public class Regex_Type extends Type{
 				if(var != null) {
 					replace = var;
 				}
+			} else if(var.contentEquals("random-consistent")) {
+				cons = true;
+				getRandomConfig(prop);
 			} else if(var.contentEquals("random")) {
-				mode = anonmode.RANDOM;
-				var = prop.getProperty("regex[" + num + "].keep");
-				String[] split = var.split(" ");
-				int splitnum = split.length;
-
-				for(int i = 0; i < splitnum; i++) {
-					char lastChar = split[i].charAt(split[i].length() - 1);
-					while(lastChar == ',' || lastChar == ' ' || lastChar == ';') {
-						split[i] = split[i].substring(0, split[i].length() - 1);
-						split[i].trim();
-						lastChar = split[i].charAt(split[i].length() - 1);
-					}
-					if(split[i].compareTo("num") == 0) {
-						keepNum = true;
-					}
-					if(split[i].compareTo("char") == 0) {
-						keepChar = true;
-					}
-					if(split[i].compareTo("spchar") == 0) {
-						keepSpChar = true;
-					}
-				}
+				getRandomConfig(prop);
 			}
+		}
+		if(cons) {
+			hash = new Hashtable<String, StringBuffer>();
 		}
 	}
 
@@ -143,5 +157,6 @@ public class Regex_Type extends Type{
 		keepNum = false;
 		keepChar = false;
 		keepSpChar = false;
+		cons = false;
 	}
 }
