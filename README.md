@@ -89,7 +89,13 @@ regex[NUMBER_OF_ANONYMIZER].NAME_OF_PARAMETER=VALUE_OF_PARAMETER
 
 * **mode** - default random
 
-  there are currently two modes available: the random and the replace mode. in random mode, the found regex string will be replaced by random characters. What characters will be randomized can be further configured using the "keep" option.
+  There are currently three modes available: the random, the random-consistent and
+  the replace mode. in random mode, the found regex string will be replaced by random
+  characters. What characters will be randomized can be further configured using the
+  "keep" option.
+  The random-consistent mode behaves very similarly to the random mode, but if it finds
+  the same regex multiple times, it will always anonymize it to the same randomly
+  generated string.
   In replace mode, the regex will be replaced by a string (see replace option).
 
 * **keep** - default all off
