@@ -1,0 +1,20 @@
+apply plugin: 'java'
+
+sourceSets {
+    main.java.srcDir "src"
+}
+
+repositories {
+}
+
+dependencies {
+}
+
+jar {
+    manifest {
+            attributes (
+                 'Main-Class': 'com.rsyslog.slfa.Main',
+                 'Class-Path': configurations.runtime.collect{it.toURI().toString()}.join(' '),
+            )
+    }
+}
