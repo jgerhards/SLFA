@@ -3,6 +3,10 @@ package com.rsyslog.slfa;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.rsyslog.slfa.file.LogFile;
+import com.rsyslog.slfa.types.Type;
+import com.rsyslog.slfa.config.Config;
+
 public class Main {
 
 	public static void main(String[] args) throws IOException {
@@ -17,7 +21,7 @@ public class Main {
 			configFile = System.getenv("LOGANONYMIZER_CONFIG");
 		}
 		if(configFile != null) {
-			config.setFilename(configFile);
+			config.setFilepath(configFile);
 		}
 		
 		ArrayList<Type> typelist = config.getTypes();

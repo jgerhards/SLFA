@@ -1,4 +1,4 @@
-package com.rsyslog.slfa;
+package com.rsyslog.slfa.config;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -7,10 +7,29 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import com.rsyslog.slfa.types.Char_Type;
+import com.rsyslog.slfa.types.IPv4_Type;
+import com.rsyslog.slfa.types.IPv6_Type;
+import com.rsyslog.slfa.types.Regex_Type;
+import com.rsyslog.slfa.types.Type;
+
+/**
+ * class to provide fnctions to get all anonymization types
+ * @author Jan Gerhards
+ *
+ */
 public class Config {
 	private InputStream inputStream;
-	private String filename = null;
+	private String filepath = null;
  
+	
+	/**
+	 * reads a property and builds a list of all
+	 * anonymization types named in the property
+	 * 
+	 * @param prop is the property to read out of
+	 * @return an ArrayList of all anonymization types
+	 */
 	private ArrayList<Type> readConfigFile(Properties prop) {
 		ArrayList<Type> list = new ArrayList<Type>();
 		String types = prop.getProperty("anonymizer");
@@ -48,24 +67,30 @@ public class Config {
 	}
 
 	
+	/**
+	 * gets a list of anonymization types from the config file
+	 * 
+	 * @return an ArrayList of anonymization types
+	 * @throws IOException
+	 */
 	public ArrayList<Type> getTypes() throws IOException {
 		Properties prop = null;
-		if(filename == null) {
+		if(filepath == null) {
 			System.out.println("config error: no file specified as config file, program will exit");
 			return null;
 		}
 		try {
 			prop = new Properties();
- 			inputStream = new FileInputStream(filename);
+ 			inputStream = new FileInputStream(filepath);
  
 			if (inputStream != null) {
 				prop.load(inputStream);
 				return readConfigFile(prop);
 			} else {
-				throw new FileNotFoundException("property file '" + filename + "' not found");
+				throw new FileNotFoundException("property file '" + filepath + "' not found");
 			}
 		} catch (Exception e) {
-			System.out.println("Error opening configuration file (" + filename + "), program will exit");
+			System.out.println("Error opening configuration file (" + filepath + "), program will exit");
 			return null;
 		} finally {
 			if(inputStream != null) {
@@ -74,7 +99,13 @@ public class Config {
 		}
 	}
 	
-	public void setFilename(String name) {
-		filename = name;
+	
+	/**
+	 * sets the filepath for the configfile 
+	 * 
+	 * @param path is the path of the config file
+	 */
+	public void setFilepath(String path) {
+		filepath = path;
 	}
 }

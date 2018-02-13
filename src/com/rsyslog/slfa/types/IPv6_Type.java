@@ -1,10 +1,18 @@
-package com.rsyslog.slfa;
+package com.rsyslog.slfa.types;
 
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Random;
 
+import com.rsyslog.slfa.file.CurrMsg;
 
+
+/**
+ * Type to anonymize IPv6 addresses
+ * 
+ * @author Jan Gerhards
+ *
+ */
 public class IPv6_Type extends Type {
 	
 	private enum anonmode {ZERO, RANDOM};
@@ -13,6 +21,15 @@ public class IPv6_Type extends Type {
 	private int bits;
 	Hashtable<IPv6_Int, IPv6_Int> hash;
 
+	
+	/**
+	 * reads a message starting at the next unprocessed character
+	 * and returns the length of a hexadecimal number if present or -1,
+	 * if the next unprocessed character is ':'
+	 * 
+	 * @param msg is the message
+	 * @return the length of the hexadecimal number or -1 if the first character is ':'
+	 */
 	private int validHexVal(CurrMsg msg) {
 		int buflen = msg.getMsgIn().length();
 		int idx =  msg.getCurrIdx() + msg.getNprocessed();
@@ -63,6 +80,15 @@ public class IPv6_Type extends Type {
 		return cyc;
 	}
 	
+	
+	/**
+	 * checks if the message starts with an IPv6 address
+	 * at the current index
+	 * 
+	 * @param msg is the message to check
+	 * @return true, if the message starts with an IPv6 address
+	 * at the current index, else false
+	 */
 	private Boolean syntax(CurrMsg msg) {
 		Boolean lastSep = false;
 		Boolean hadAbbrev = false;
@@ -115,6 +141,12 @@ public class IPv6_Type extends Type {
 		}
 	}
 	
+	
+	/**
+	 * returns the hexadecimal value of a character
+	 * @param c is the character to calculate the value for
+	 * @return the hexadecimal value of c
+	 */
 	private int getHexVal(char c) {
 		if('0' <= c && c <= '9') {
 			return c - '0';
@@ -127,6 +159,14 @@ public class IPv6_Type extends Type {
 		}
 	}
 
+	
+	/**
+	 * converts the IPv6 address in a message to an IPv6_Int
+	 * starting at the current index of the message.
+	 * 
+	 * @param msg is the message
+	 * @return the ip address in the message starting at the current index
+	 */
 	private IPv6_Int ip2int(CurrMsg msg) {
 		IPv6_Int ip = new IPv6_Int();
 		int num[] = {0, 0, 0, 0, 0, 0, 0, 0};
@@ -186,6 +226,13 @@ public class IPv6_Type extends Type {
 
 	}
 	
+	/**
+	 * anonymizes an ip address
+	 * 
+	 * @param ip is the address to anonymize represented as an IPv6_Int
+	 * @param rand is the randomizer
+	 * @return the anonymized address as an IPv6_Int
+	 */
 	private void	code_ipv6_int(IPv6_Int ip, CurrMsg msg)
 	{
 		Random rand = msg.getRand();
@@ -224,6 +271,13 @@ public class IPv6_Type extends Type {
 		}
 	}
 
+	/**
+	 * converts an IPv6_Int to a string representation of an IPv6 address
+	 * and appends it to the output buffer of a message
+	 * 
+	 * @param ip is the ip address
+	 * @param msg is the message to append to
+	 */
 	private void appendIP(IPv6_Int ip, CurrMsg msg) {
 		int num[] = new int[8];
 		int i;
@@ -255,6 +309,14 @@ public class IPv6_Type extends Type {
 
 	}
 	
+	/**
+	 * Checks if an ip address is already saved in the hashmap.
+	 * If it is, appends the saved anonymized address to the message output. If
+	 * it is not present in the hashmap, anonymizes and saves it before appending.
+	 * 
+	 * @param msg is the currently worked on message
+	 * @param num is the address
+	 */
 	private void findIP(CurrMsg msg, IPv6_Int num) {
 		IPv6_Int ip = hash.get(num);
 		if(ip == null) {
@@ -267,6 +329,12 @@ public class IPv6_Type extends Type {
 		appendIP(ip, msg);
 	}
 	
+
+	/**
+	 * anonymizes an IPv6 address and adds it to the output buffer of the message
+	 * 
+	 * @param msg is the message to anonymize
+	 */
 	@Override
 	public void anon(CurrMsg msg) {
 		if(syntax(msg)) {
@@ -282,6 +350,12 @@ public class IPv6_Type extends Type {
 		}
 	}
 
+
+	/**
+	 * reads the configuration for the IPv4 type
+	 * 
+	 * @param prop is he property to read from
+	 */
 	@Override
 	public void getConfig(Properties prop) {
 		String var;
@@ -313,6 +387,10 @@ public class IPv6_Type extends Type {
 		}
 	}
 
+
+	/**
+	 * default constructor, initializes defaults
+	 */
 	public IPv6_Type() {
 		bits = 96;
 		mode = anonmode.ZERO;
