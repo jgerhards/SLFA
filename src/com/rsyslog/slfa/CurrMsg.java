@@ -32,6 +32,10 @@ public class CurrMsg {
 	public void setNprocessed(int nprocessed) {
 		this.nprocessed = nprocessed;
 	}
+	
+	public void addNprocessed(int toAdd) {
+		this.nprocessed += toAdd;
+	}
 
 	public int getCurrIdx() {
 		return currIdx;

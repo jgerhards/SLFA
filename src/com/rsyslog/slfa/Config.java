@@ -30,6 +30,8 @@ public class Config {
 				list.add(new IPv4_Type());
 			} else if(split[i].equals("ipv6")) {
 				list.add(new IPv6_Type());
+			} else if(split[i].equals("embeddedipv4")) {
+				list.add(new EmbeddedIPv4_Type());
 			} else if(split[i].equals("regex")) {
 				i++;
 				int numreg = Integer.parseUnsignedInt(split[i]);
