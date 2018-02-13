@@ -18,6 +18,16 @@ public class IPv6_Int {
 		this.low = low;
 	}
 
+	public void appendToHigh(int toAdd) {
+		high = high << 16;
+		high = high + toAdd;
+	}
+
+	public void appendToLow(int toAdd) {
+		low = low << 16;
+		low = low + toAdd;
+	}
+	
    public boolean equals(Object cmp) {
 		if(this.getHigh() == ((IPv6_Int)cmp).getHigh() && this.getLow() == ((IPv6_Int)cmp).getLow()) {
 			return true;
