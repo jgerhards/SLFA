@@ -1,4 +1,4 @@
-package com.rsyslog.slfa;
+package com.rsyslog.slfa.config;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

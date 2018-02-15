@@ -1,11 +1,18 @@
 echo 'anonymizer=ipv4
 ' > testconfig.properties
 
+cd build/classes/java/main
+
 echo 'no ip address
 1.1.172.3
 123' > testfile.txt
 
-java -jar -Dconfigfile=testconfig.properties ../slfa.jar testfile.txt > test.log
+echo 'anonymizer=ipv4
+
+ipv4.bits=16
+ipv4.mode=zero' > testconfig.properties
+
+java -Dconfigfile=testconfig.properties com.rsyslog.slfa.Main testfile.txt > test.log
 
 echo 'no ip address
 1.1.0.0
@@ -20,3 +27,5 @@ else
   rm testconfig.properties
   rm testfile.txt
 fi;
+
+cd ../../../..

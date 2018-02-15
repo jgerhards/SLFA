@@ -1,9 +1,17 @@
-package com.rsyslog.slfa;
+package com.rsyslog.slfa.types;
 
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Random;
 
+import com.rsyslog.slfa.file.CurrMsg;
+
+/**
+ * Type to anonymize IPv4 addresses
+ * 
+ * @author Jan Gerhards
+ *
+ */
 public class IPv4_Type extends Type {
 
 	private enum ipv4mode {ZERO, RANDOM};
@@ -14,6 +22,16 @@ public class IPv4_Type extends Type {
 	
 	private int[] ipParts;
 
+	
+	/**
+	 * reads a message from a starting position and checks, if it starts with an integer. If it
+	 * does, writes the integer into ipParts, else sets a value in ipParts to -1.
+	 * 
+	 * @param msg the message to read
+	 * @param i the position in ipParts
+	 * @param j the position to start reading the message
+	 * @return the starting position with the length of the integer added
+	 */
 	private int getposint(CurrMsg msg, int i, int j) {
 		ipParts[i] = -1;
 		while(j < msg.getMsgIn().length()) {
@@ -32,6 +50,13 @@ public class IPv4_Type extends Type {
 
 	}
 	
+	
+	/**
+	 * checks if the message contains an IPv4 address at the current index.
+	 * 
+	 * @param msg is the messgae to check
+	 * @return true if is contains an IPv4 address at the current index, else false
+	 */
 	private Boolean syntax(CurrMsg msg) {
 		Boolean isIP = false;
 		int i = msg.getCurrIdx();
@@ -74,6 +99,12 @@ public class IPv4_Type extends Type {
 		return isIP;
 	}
 	
+	
+	/**
+	 * converts the ip address stored in ipParts to an integer
+	 * 
+	 * @return the ip as an integer
+	 */
 	private int ip2num() {
 		int num = 0;
 		
@@ -84,6 +115,14 @@ public class IPv4_Type extends Type {
 		return num;
 	}
 	
+	
+	/**
+	 * anonymizes an ip address
+	 * 
+	 * @param num is the address to anonymize as an integer
+	 * @param rand is the randomizer
+	 * @return the anonymized address as an integer
+	 */
 	private int codeInt(int num, Random rand) {
 		int randomNum = 0;
 		
@@ -108,6 +147,14 @@ public class IPv4_Type extends Type {
 		return num;
 	}
 	
+	
+	/**
+	 * converts an integer to an equivalent IPv4 address and appends
+	 * that to the message output buffer.
+	 * 
+	 * @param num is the ip address to convert and append
+	 * @param msg is the message to append to
+	 */
 	private void appendIP(int num, CurrMsg msg) {
 		int parts[] = new int[4];
 		
@@ -123,6 +170,14 @@ public class IPv4_Type extends Type {
 		msg.getMsgOut().append(parts[3]);
 	}
 
+	/**
+	 * Checks if an ip address (saved as an integer) is already saved in the hashmap.
+	 * If it is, appends the saved anonymized address to the message output. If
+	 * it is not present in the hashmap, anonymizes and saves it before appending.
+	 * 
+	 * @param num is the address represented as an integer
+	 * @param msg is the currently worked on message
+	 */
 	private void findIP(int num, CurrMsg msg) {
 		Integer ip = (Integer) hash.get(num);
 		if(ip == null) {
@@ -132,6 +187,12 @@ public class IPv4_Type extends Type {
 		appendIP(ip, msg);
 	}
 	
+	
+	/**
+	 * anonymizes an IPv4 address and adds it to the output buffer of the message
+	 * 
+	 * @param msg is the message to anonymize
+	 */
 	@Override
 	public void anon(CurrMsg msg) {
 		int intAddress;
@@ -147,6 +208,10 @@ public class IPv4_Type extends Type {
 		}
 	}
 
+	
+	/**
+	 * default constructor, initializes defaults
+	 */
 	public IPv4_Type() {
 		ipParts = new int[4];
 		bits = 16;
@@ -154,6 +219,12 @@ public class IPv4_Type extends Type {
 		cons = false;
 	}
 	
+	
+	/**
+	 * reads the configuration for the IPv4 type
+	 * 
+	 * @param prop is he property to read from
+	 */
 	@Override
 	public void getConfig(Properties prop) {
 		String var;
