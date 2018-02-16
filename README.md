@@ -31,7 +31,7 @@ They each stand in a new line and are composed by the parameter name, followed b
 Please note that because of the framework the characters ';' and '\\' will be escaped and you will have to put another '\\' in front of it. For example, to set "\\." as a parameter, you have to write "\\\\." in the configuration file.
 
 The configuration file has many different parameters, but the most important one is ```anonymizer```.
-It specifies which anonymizers are applied to the file as well as in what order. However, it does not influence the configuration of the anonymizers temselves. This happens in a separate part for every anonymizer listed in this parameter. The format of this parameter calls for every anonymizer to be separated by a space. No other character may be used, except for commas, which may only be used if not separated by a space and if the anonymizers still have at least one space between them (example: ipv6, ipv4). In cases where more than one anonymizer of the same type (currently only supported by the regex anonymizer) is to be used, they also have to be diffentiated by a number. This number has to be separated by a space from the type and no other charakters may be inbetween the number and the type. It does not matter what number is used. They do not have to be in order and if more than one type of anonymizer is classified by a number, it will work, as long as no number is used twice in a type. PLease keep in mind that a number has to be used, even if it is the only anonymizer of that type.
+It specifies which anonymizers are applied to the file as well as in what order. However, it does not influence the configuration of the anonymizers temselves. This happens in a separate part for every anonymizer listed in this parameter. The format of this parameter calls for every anonymizer to be separated by a space. No other character may be used, except for commas, which may only be used if not separated by a space and if the anonymizers still have at least one space between them (example: ipv6, ipv4). In cases where more than one anonymizer of the same type (currently only supported by the regex anonymizer) is to be used, they also have to be diffentiated by a number. This number has to be separated by a space from the type and no other charakters may be inbetween the number and the type. It does not matter what number is used. They do not have to be in order and if more than one type of anonymizer is classified by a number, it will work, as long as no number is used twice in a type. Please keep in mind that a number has to be used, even if it is the only anonymizer of that type.
 
 
 ### IPv4 anonymizer
@@ -73,6 +73,28 @@ Every parameter regarding this anonymizer is formated like this: ```ipv6.NAME_OF
 
   The default "zero" mode will do full anonymization of any number of bits and it will also normalize the address, so that no information about the original IP address is available.
   Also note that an anonymmized IPv6 address will be normalized, meaning there will be no abbreviations, leading zeros will not be displayed, and capital letters in the hex numerals will be lowercase. So for example, 12F:3DE9::22:9A would be anonymized to 0:0:0:0:0:0:0:0 (with 128 bits).
+
+
+### IPv6 with embedded IPv4 anonymizer
+An IPv6 with embedded IPv4 is defined by being bewtween zero and six hex values between 0 and ffff. These are separated by ':'. Leading zeros in blocks can be omitted and blocks full of zeros can be abbreviated by using '::'. However, this can ony happen once in an IP address. This is followed by an IPv4 address (see IPv4 for definition) that is separated from the first part by a ':'. You can select this anonymization type by adding 'embeddedipv4' to the anonymizer configuraion.
+Every parameter regarding this anonymizer is formated like this: ```embeddedipv4.NAME_OF_PARAMETER=VALUE_OF_PARAMETER```
+
+#### Parameters
+* **bits** - default 96
+
+  This sets the number of bits that should be anonymized (bits are from the right, so lower bits are anonymized first). This setting permits to save network information while still anonymizing user-specific data. The more bits you discard, the better the anonymization obviously is. The default of 96 bits reflects what German data privacy rules consider as being sufficinetly anonymized. We assume, this can also be used as a rough but conservative guideline for other countries.
+
+* **mode** - default zero
+
+  "zero", "random" or "random-consistent"
+  
+  This defines the mode, in which IPv6 addresses will be anonymized.
+  There exist the "random", "random-consitent", and "zero" modes.
+
+  The modes "random" and "random-consistent" are very similar, in that they both anonymize ip-addresses by randomizing the last bits (any number) of a given address. However, while "random" mode assigns a new completely random ip-address for every address in a message, "random-consitent" will assign the same randomized address to every instance of the same original address.
+
+  The default "zero" mode will do full anonymization of any number of bits and it will also normalize the address, so that no information about the original IP address is available.
+  Also note that an anonymmized IPv6 address will be normalized, meaning there will be no abbreviations, leading zeros will not be displayed, and capital letters in the hex numerals will be lowercase. So for example, 12F:3DE9::22:172.1.1.0 would be anonymized to 0:0:0:0:0:0:0.0.0.0 (with 128 bits).
 
 
 ### Regex anonymizer
