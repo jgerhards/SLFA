@@ -1,4 +1,4 @@
-package com.rsyslog.slfa;
+package com.rsyslog.slfa.types;
 
 import java.util.Hashtable;
 import java.util.Properties;
@@ -6,6 +6,15 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.rsyslog.slfa.file.CurrMsg;
+
+
+/**
+ * Type to anonymize regular expressions
+ * 
+ * @author Jan Gerhards
+ *
+ */
 public class Regex_Type extends Type{
 	private enum anonmode {REPLACE, RANDOM};
 	
@@ -24,6 +33,15 @@ public class Regex_Type extends Type{
 	Hashtable<String, StringBuffer> hash;
 
 
+	/**
+	 * randomizes and appends a regular expression
+	 * 
+	 * @param msg is the message
+	 * @param regexLen is the length of the regular expression
+	 * @param rand is the randomizer
+	 * @param idx is the index at which to start
+	 * @param buff is the buffer that the characters are appended to
+	 */
 	private void randomizeRegex(String msg, int regexLen, Random rand, int idx, StringBuffer buff) {
 		char c;
 		
@@ -41,8 +59,13 @@ public class Regex_Type extends Type{
 		}
 	}
 	
+	
+	/**
+	 * append the anonymized regular expression to the message output buffer
+	 * 
+	 * @param msg is the message
+	 */
 	private void appendEnd(CurrMsg msg) {
-		
 		switch(mode) {
 		case RANDOM :
 			if(cons) {
@@ -65,6 +88,12 @@ public class Regex_Type extends Type{
 		}
 	}
 	
+	
+	/**
+	 * anonymizes an IPv4 address and adds it to the output buffer of the message
+	 * 
+	 * @param msg is the message to anonymize
+	 */
 	private void real_anon(CurrMsg msg) {
 		if(msg.getCurrIdx() == 0) {
 			lastStart = -1;
@@ -83,7 +112,14 @@ public class Regex_Type extends Type{
 			appendEnd(msg);
 		}
 	}
+		
 	
+	/**
+	 * anonymizes an IPv4 address and adds it to the output buffer of the message
+	 * or does nothing, if the configuration is insufficient
+	 * 
+	 * @param msg is the message to anonymize
+	 */
 	@Override
 	public void anon(CurrMsg msg) {
 		if(jumpover) {
@@ -93,6 +129,12 @@ public class Regex_Type extends Type{
 		}
 	}
 
+	
+	/**
+	 * reads advanced configuration for the random option
+	 * 
+	 * @param prop is the property to read from
+	 */
 	private void getRandomConfig(Properties prop) {
 		mode = anonmode.RANDOM;
 		String var = prop.getProperty("regex[" + num + "].keep");
@@ -118,6 +160,12 @@ public class Regex_Type extends Type{
 		}		
 	}
 	
+	
+	/**
+	 * reads the configuration for the IPv4 type
+	 * 
+	 * @param prop is he property to read from
+	 */
 	@Override
 	public void getConfig(Properties prop) {
 		String var;
@@ -150,6 +198,10 @@ public class Regex_Type extends Type{
 		}
 	}
 
+
+	/**
+	 * default constructor, initializes defaults
+	 */
 	public Regex_Type(int name) {
 		jumpover = false;
 		num = name;

@@ -1,11 +1,19 @@
-package com.rsyslog.slfa;
+package com.rsyslog.slfa.types;
 
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Random;
 
+import com.rsyslog.slfa.file.CurrMsg;
 
-class EmbeddedIPv4_Type extends Type{
+
+/**
+ * Type to anonymize IPv6 addresses with an embedded IPv4
+ * 
+ * @author Jan Gerhards
+ *
+ */
+public class EmbeddedIPv4_Type extends Type{
 	private enum anonmode {ZERO, RANDOM};
 	private anonmode mode;
 	private boolean cons;
@@ -16,6 +24,16 @@ class EmbeddedIPv4_Type extends Type{
 	private int v4Start;
 	private int v4Len;
 	
+	
+	/**
+	 * reads a message from a starting position and checks, if it starts with an integer. If it
+	 * does, writes the integer into ipParts, else sets a value in ipParts to -1.
+	 * 
+	 * @param msg the message to read
+	 * @param i the position in ipParts
+	 * @param j the position to start reading the message
+	 * @return the starting position with the length of the integer added
+	 */
 	private int getposint(CurrMsg msg, int i, int j) {
 		ipParts[i] = -1;
 		while(j < msg.getMsgIn().length()) {
@@ -35,6 +53,11 @@ class EmbeddedIPv4_Type extends Type{
 	}
 	
 
+	/**
+	 * returns the hexadecimal value of a character
+	 * @param c is the character to calculate the value for
+	 * @return the hexadecimal value of c
+	 */
 	private int getHexVal(char c) {
 		if('0' <= c && c <= '9') {
 			return c - '0';
@@ -48,6 +71,13 @@ class EmbeddedIPv4_Type extends Type{
 	}
 
 
+	/**
+	 * checks if the message contains an IPv4 address starting at v4Start
+	 * and if it does saves the values of the parts in ipParts
+	 * 
+	 * @param msg is the message to check in
+	 * @return true if it contains an IPv4 address, else false
+	 */
 	private Boolean syntaxV4(CurrMsg msg) {
 		ipParts = new int[4];
 
@@ -93,6 +123,15 @@ class EmbeddedIPv4_Type extends Type{
 		return isIP;
 	}
 
+	
+	/**
+	 * reads a message starting at the next unprocessed character
+	 * and returns the length of a hexadecimal number if present; -1,
+	 * if the next unprocessed character is ':' or -2 if it is '.'
+	 * 
+	 * @param msg is the message
+	 * @return the length of the hexadecimal number; also -1 if the first character is ':' or -2 if it is '.'
+	 */
 	private int validHexVal(CurrMsg msg) { //please note: this is a similar function to the one in IPv6_Type, but not the same
 		int buflen = msg.getMsgIn().length();
 		int idx =  msg.getCurrIdx() + msg.getNprocessed();
@@ -149,6 +188,15 @@ class EmbeddedIPv4_Type extends Type{
 		return cyc;
 	}
 	
+	
+	/**
+	 * finds the start of the IPv4 part of a IPv6 address with embedded IPv4
+	 * after the first dot was found
+	 * 
+	 * @param msg is the message to search in
+	 * @param dotPos is the position of the first dot of the IPv4 part in the message
+	 * @return the start of the IPv4 part in the address
+	 */
 	private int findV4Start(CurrMsg msg, int dotPos) {
 		while(dotPos > 0) {
 			if(msg.getMsgIn().charAt(dotPos) == ':') {
@@ -160,6 +208,13 @@ class EmbeddedIPv4_Type extends Type{
 	}
 
 	
+	/**
+	 * converts the IPv6 address with embedded IPv4 in a message to an IPv6_Int
+	 * starting at the current index of the message.
+	 * 
+	 * @param msg is the message
+	 * @return the ip address in the message starting at the current index
+	 */
 	private IPv6_Int ip2int(CurrMsg msg) {
 		IPv6_Int ip = new IPv6_Int();
 		int num[] = {0, 0, 0, 0, 0, 0};
@@ -219,6 +274,13 @@ class EmbeddedIPv4_Type extends Type{
 	}
 	
 	
+	/**
+	 * anonymizes an ip address
+	 * 
+	 * @param ip is the address to anonymize represented as an IPv6_Int
+	 * @param rand is the randomizer
+	 * @return the anonymized address as an IPv6_Int
+	 */
 	private void	code_ipv6_int(IPv6_Int ip, CurrMsg msg)
 	{
 		Random rand = msg.getRand();
@@ -258,6 +320,12 @@ class EmbeddedIPv4_Type extends Type{
 	}
 
 
+	/**
+	 * appends the IPv4 part of an IPv6 address with embedded IPv4
+	 * 
+	 * @param num is the IPv4 part to append
+	 * @param msg is the message to append to
+	 */
 	private void appendv4(int num, CurrMsg msg) {
 		int parts[] = new int[4];
 		
@@ -274,6 +342,12 @@ class EmbeddedIPv4_Type extends Type{
 	}
 
 
+	/**
+	 * appends an IPv6 address to the output buffer of a message
+	 * 
+	 * @param ip is the IP to append
+	 * @param msg is the message to append to
+	 */
 	private void appendIP(IPv6_Int ip, CurrMsg msg) {
 		int num[] = new int[8];
 		int i;
@@ -306,6 +380,14 @@ class EmbeddedIPv4_Type extends Type{
 	}
 
 	
+	/**
+	 * checks if the message starts with an IPv6 address
+	 * with embedded IPv4 at the current index
+	 * 
+	 * @param msg is the message to check
+	 * @return true, if the message starts with an IPv6 address
+	 * at the current index, else false
+	 */
 	private Boolean syntax(CurrMsg msg) {
 		Boolean lastSep = false;
 		Boolean hadAbbrev = false;
@@ -354,6 +436,14 @@ class EmbeddedIPv4_Type extends Type{
 	}
 
 	
+	/**
+	 * Checks if an ip address is already saved in the hashmap.
+	 * If it is, appends the saved anonymized address to the message output. If
+	 * it is not present in the hashmap, anonymizes and saves it before appending.
+	 * 
+	 * @param msg is the currently worked on message
+	 * @param num is the address
+	 */
 	private void findIP(CurrMsg msg, IPv6_Int num) {
 		IPv6_Int ip = hash.get(num);
 		if(ip == null) {
@@ -367,6 +457,11 @@ class EmbeddedIPv4_Type extends Type{
 	}
 	
 
+	/**
+	 * anonymizes an IPv6 address with embedded IPv4 and adds it to the output buffer of the message
+	 * 
+	 * @param msg is the message to anonymize
+	 */
 	@Override
 	public void anon(CurrMsg msg) {
 		v4Len = 0;
@@ -379,13 +474,17 @@ class EmbeddedIPv4_Type extends Type{
 				code_ipv6_int(ip, msg);
 				appendIP(ip, msg);
 			}
-//System.out.println("found embedded: \"" + msg.getMsgIn().substring(msg.getCurrIdx()) + "\"");
-//msg.setNprocessed(0);
 		} else {
 			msg.setNprocessed(0);
 		}
 	}
 
+
+	/**
+	 * reads the configuration for the EmbeddedIPv4 type
+	 * 
+	 * @param prop is the property to read from
+	 */
 	@Override
 	public void getConfig(Properties prop) {
 		String var;
@@ -418,6 +517,9 @@ class EmbeddedIPv4_Type extends Type{
 	}
 	
 	
+	/**
+	 * default constructor, initializes defaults
+	 */
 	public EmbeddedIPv4_Type() {
 		v4Len = 0;
 		v4Start = 0;
