@@ -12,13 +12,16 @@ The Jar file contains the program. To run it you will need to install Java, if y
 ## The Configuration File
 
 For SLFA to know how to anonymize your file you need to specify the details in the configuration file. Here is an example for an configuration file, which we will use.
+
 '''
 anonymizer=ipv4, ipv6
 
 ipv4.bits=32
+
 ipv4.mode=zero
 
 ipv6.bits=112
+
 ipv6.mode=zero
 '''
 
@@ -29,6 +32,7 @@ After that the single anonymizer are configured. This is done in the following f
 ## Running the program
 
 When you have all three files you can start the program in the command line with the following command:
+
 '''
 java -Dconfigfile=PATH\TO\CONFIG\FILE -jar slfa.jar FILENAMES
 '''
@@ -36,6 +40,7 @@ java -Dconfigfile=PATH\TO\CONFIG\FILE -jar slfa.jar FILENAMES
 The configuration file is set with the parameter '-Dconfigfile'. Then you set the jar file with parameter '-jar', followed by first the jar file and then the names of all files to be anonymised.
 The anonymized file will be forwarded to stdout so it is recommended to redirect it to a file.
 In our example the command would look like this:
+
 '''
 java -Dconfigfile=config.txt -jar SLFA.jar access.log > output.log
 '''
