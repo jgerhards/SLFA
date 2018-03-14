@@ -20,6 +20,27 @@ java -Dconfigfile=PATH_TO_CONFIG_FILE -jar slfa.jar FILENAMES
 Most of the configuration of slfa works via a configuration file. The path to this file is read out of the environment variable LOGANONYMIZER_CONFIG. Alternatively, you can set the file to read the configuration out of by using the -Dconfigfile parameter (overrides environment variable if it is set). For this parameter, it is important to remember to give not only the filename, but the whole path to guarantee the programm finding the file. 
 Following the starting command itself are the names of files to be anonymized. Slfa will go through each of the files in the order provided and anonymize depending on the configuration. The output will be given to stdout, meaning the anonymized content of the files will appear in the terminal.
 
+Slfa also allows to read from standard input:
+```
+zcat access.log.2.gz | java -Dstdin -Dconfigfile=PATH_TO_CONFIG_FILE -jar SLFA.jar
+```
+
+
+You can execute the following commands to get started with Slfa and to anonymize some logfile:
+```
+# Download and create jar
+git clone https://github.com/jgerhards/SLFA.git
+cd SLFA
+gradle jar
+
+# Example for a plaintext file - using file parameter
+java -Dconfigfile=conf/example-slfa-all-ip-half.properties -jar build/libs/SLFA.jar "/var/log/apache2/access.log"  > anon.log
+# Example for a plaintext file - using stdin
+cat "/var/log/apache2/access.log" | java -Dstdin -Dconfigfile=conf/example-slfa-all-ip-half.properties -jar build/libs/SLFA.jar > anon.log
+# Example for a packed file
+zcat "/var/log/apache2/access.log.2.gz" | java -Dstdin -Dconfigfile=conf/example-slfa-all-ip-half.properties -jar build/libs/SLFA.jar > anon.log
+```
+
 
 ## configuration file
 All the configuration parameters in the configuration file are structured like this:

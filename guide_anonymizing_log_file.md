@@ -46,3 +46,23 @@ java -Dconfigfile=config.txt -jar SLFA.jar access.log > output.log
 '''
 
 Like this you will have your anonymized version of access.log in output.log.
+
+Slfa also allows to read from standard input:
+```
+cat access.log | java -Dstdin -Dconfigfile=PATH_TO_CONFIG_FILE -jar SLFA.jar
+```
+
+You can execute the following commands to get started with Slfa and to anonymize some logfile:
+```
+# Download and create jar
+git clone https://github.com/jgerhards/SLFA.git
+cd SLFA
+gradle jar
+
+# Example for a plaintext file - using file parameter
+java -Dstdin -Dconfigfile=conf/example-slfa-all-ip-half.properties -jar build/libs/SLFA.jar "/var/log/apache2/access.log"  > anon.log
+# Example for a plaintext file - using stdin
+cat "/var/log/apache2/access.log"  |  java -Dstdin -Dconfigfile=conf/example-slfa-all-ip-half.properties -jar build/libs/SLFA.jar > anon.log
+# Example for a packed file
+zcat "/var/log/apache2/access.log.2.gz"  |  java -Dstdin -Dconfigfile=conf/example-slfa-all-ip-half.properties -jar build/libs/SLFA.jar > anon.log
+```
