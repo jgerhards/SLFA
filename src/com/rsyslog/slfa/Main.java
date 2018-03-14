@@ -31,13 +31,17 @@ public class Main {
 		
 		for(int i = 0; i < args.length; i++) {
 			if(i > 0) {
-				System.out.println();
-				System.out.println();
+				System.out.println("\n\n");
 			}
 			LogFile current = new LogFile(args[i], typelist);
 			current.anon();
 		}
-		
+		if (System.getenv("LOGANONYMIZER_READ_FROM_STDIN") != null || System.getProperty("stdin") != null){
+			if(args.length > 0) {
+				System.out.println("\n\n");
+			}
+			new LogFile(System.in, typelist).anon();
+		}
 	}
 
 }
