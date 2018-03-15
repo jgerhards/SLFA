@@ -1,10 +1,13 @@
 apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+
+repositories {
+    jcenter()
+}
 
 sourceSets {
     main.java.srcDir "src"
-}
-
-repositories {
 }
 
 dependencies {
@@ -18,3 +21,4 @@ jar {
             )
     }
 }
+
