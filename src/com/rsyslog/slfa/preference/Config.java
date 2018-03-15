@@ -1,6 +1,6 @@
-package com.rsyslog.slfa.config;
+package com.rsyslog.slfa.preference;
 
-import com.rsyslog.slfa.types.*;
+import com.rsyslog.slfa.anonymization.*;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Properties;
 
 /**
- * class to provide functions to get all anonymization types
+ * class to provide functions to get all anonymization anonymization
  *
  * @author Jan Gerhards
  */
@@ -21,13 +21,13 @@ public class Config {
 
     /**
      * reads a property and builds a list of all
-     * anonymization types named in the property
+     * anonymization anonymization named in the property
      *
      * @param prop is the property to read out of
-     * @return an ArrayList of all anonymization types
+     * @return an ArrayList of all anonymization anonymization
      */
-    private ArrayList<Type> readConfigFile(Properties prop) {
-        ArrayList<Type> list = new ArrayList<Type>();
+    private ArrayList<AnonType> readConfigFile(Properties prop) {
+        ArrayList<AnonType> list = new ArrayList<AnonType>();
         String types = prop.getProperty("anonymizer");
         String[] split = types.split(" ");
         int splitnum = split.length;
@@ -42,20 +42,20 @@ public class Config {
         }
         for (int i = 0; i < splitnum; i++) {
             if (split[i].equals("ipv4")) {
-                list.add(new IPv4_Type());
+                list.add(new Ipv4AnonType());
             } else if (split[i].equals("ipv6")) {
-                list.add(new IPv6_Type());
+                list.add(new Ipv6AnonType());
             } else if (split[i].equals("embeddedipv4")) {
-                list.add(new EmbeddedIPv4_Type());
+                list.add(new EmbeddedIpv4AnonType());
             } else if (split[i].equals("regex")) {
                 i++;
                 int numreg = Integer.parseUnsignedInt(split[i]);
-                list.add(new Regex_Type(numreg));
+                list.add(new RegexAnonType(numreg));
             } else {
                 System.out.println("error: unknown anonymization type '" + split[i] + "' ignored");
             }
         }
-        list.add(new Char_Type());
+        list.add(new NoneAnonType());
 
         int listLen = list.size();
         for (int i = 0; i < listLen; i++) {
@@ -66,15 +66,15 @@ public class Config {
 
 
     /**
-     * gets a list of anonymization types from the config file
+     * gets a list of anonymization anonymization from the preference file
      *
-     * @return an ArrayList of anonymization types
+     * @return an ArrayList of anonymization anonymization
      * @throws IOException
      */
-    public ArrayList<Type> getTypes() throws IOException {
+    public ArrayList<AnonType> getTypes() throws IOException {
         Properties prop = null;
         if (filepath == null) {
-            System.out.println("config error: no file specified as config file, program will exit");
+            System.out.println("preference error: no file specified as preference file, program will exit");
             return null;
         }
         try {
@@ -101,7 +101,7 @@ public class Config {
     /**
      * sets the filepath for the configfile
      *
-     * @param path is the path of the config file
+     * @param path is the path of the preference file
      */
     public void setFilepath(String path) {
         filepath = path;

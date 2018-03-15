@@ -1,4 +1,4 @@
-package com.rsyslog.slfa.file;
+package com.rsyslog.slfa.model;
 
 import java.util.Random;
 

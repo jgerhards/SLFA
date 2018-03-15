@@ -1,11 +1,11 @@
-package com.rsyslog.slfa.types;
+package com.rsyslog.slfa.model;
 
 /**
  * class consisting of two long values to save IPv6 address
  *
  * @author Jan Gerhards
  */
-public class IPv6_Int {
+public class Ipv6 {
     private long high;
     private long low;
 
@@ -43,7 +43,7 @@ public class IPv6_Int {
     /**
      * setter for second long value
      *
-     * @param high is the second long value
+     * @param low is the second long value
      */
     public void setLow(long low) {
         this.low = low;
@@ -75,7 +75,7 @@ public class IPv6_Int {
 
 
     public boolean equals(Object cmp) {
-        if (this.getHigh() == ((IPv6_Int) cmp).getHigh() && this.getLow() == ((IPv6_Int) cmp).getLow()) {
+        if (this.getHigh() == ((Ipv6) cmp).getHigh() && this.getLow() == ((Ipv6) cmp).getLow()) {
             return true;
         } else {
             return false;

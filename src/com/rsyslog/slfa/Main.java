@@ -1,8 +1,8 @@
 package com.rsyslog.slfa;
 
-import com.rsyslog.slfa.config.Config;
-import com.rsyslog.slfa.file.LogFile;
-import com.rsyslog.slfa.types.Type;
+import com.rsyslog.slfa.anonymization.AnonType;
+import com.rsyslog.slfa.model.LogFile;
+import com.rsyslog.slfa.preference.Config;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class Main {
             config.setFilepath(configFile);
         }
 
-        ArrayList<Type> typelist = config.getTypes();
+        ArrayList<AnonType> typelist = config.getTypes();
         if (typelist == null) {
             return;
         }

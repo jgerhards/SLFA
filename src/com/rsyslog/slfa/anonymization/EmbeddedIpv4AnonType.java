@@ -1,6 +1,7 @@
-package com.rsyslog.slfa.types;
+package com.rsyslog.slfa.anonymization;
 
-import com.rsyslog.slfa.file.CurrMsg;
+import com.rsyslog.slfa.model.CurrMsg;
+import com.rsyslog.slfa.model.Ipv6;
 
 import java.util.Hashtable;
 import java.util.Properties;
@@ -12,7 +13,7 @@ import java.util.Random;
  *
  * @author Jan Gerhards
  */
-public class EmbeddedIPv4_Type extends Type {
+public class EmbeddedIpv4AnonType extends AnonType {
     private enum anonmode {ZERO, RANDOM}
 
     ;
@@ -20,7 +21,7 @@ public class EmbeddedIPv4_Type extends Type {
     private boolean cons;
     private int bits;
 
-    Hashtable<IPv6_Int, IPv6_Int> hash;
+    Hashtable<Ipv6, Ipv6> hash;
     private int[] ipParts;
     private int v4Start;
     private int v4Len;
@@ -134,7 +135,7 @@ public class EmbeddedIPv4_Type extends Type {
      * @param msg is the message
      * @return the length of the hexadecimal number; also -1 if the first character is ':' or -2 if it is '.'
      */
-    private int validHexVal(CurrMsg msg) { //please note: this is a similar function to the one in IPv6_Type, but not the same
+    private int validHexVal(CurrMsg msg) { //please note: this is a similar function to the one in Ipv6AnonType, but not the same
         int buflen = msg.getMsgIn().length();
         int idx = msg.getCurrIdx() + msg.getNprocessed();
         int cyc = 0;
@@ -211,14 +212,14 @@ public class EmbeddedIPv4_Type extends Type {
 
 
     /**
-     * converts the IPv6 address with embedded IPv4 in a message to an IPv6_Int
+     * converts the IPv6 address with embedded IPv4 in a message to an Ipv6
      * starting at the current index of the message.
      *
      * @param msg is the message
      * @return the ip address in the message starting at the current index
      */
-    private IPv6_Int ip2int(CurrMsg msg) {
-        IPv6_Int ip = new IPv6_Int();
+    private Ipv6 ip2int(CurrMsg msg) {
+        Ipv6 ip = new Ipv6();
         int num[] = {0, 0, 0, 0, 0, 0};
         int cyc = 0;
         int dots = 0;
@@ -279,11 +280,10 @@ public class EmbeddedIPv4_Type extends Type {
     /**
      * anonymizes an ip address
      *
-     * @param ip   is the address to anonymize represented as an IPv6_Int
-     * @param rand is the randomizer
-     * @return the anonymized address as an IPv6_Int
+     * @param ip is the address to anonymize represented as an Ipv6
+     * @return the anonymized address as an Ipv6
      */
-    private void code_ipv6_int(IPv6_Int ip, CurrMsg msg) {
+    private void code_ipv6_int(Ipv6 ip, CurrMsg msg) {
         Random rand = msg.getRand();
         int bitscpy = bits;
 
@@ -349,13 +349,13 @@ public class EmbeddedIPv4_Type extends Type {
      * @param ip  is the IP to append
      * @param msg is the message to append to
      */
-    private void appendIP(IPv6_Int ip, CurrMsg msg) {
+    private void appendIP(Ipv6 ip, CurrMsg msg) {
         int num[] = new int[8];
         int i;
-        IPv6_Int ipcpy;
+        Ipv6 ipcpy;
 
         if (cons) {
-            ipcpy = new IPv6_Int();
+            ipcpy = new Ipv6();
             ipcpy.setHigh(ip.getHigh());
             ipcpy.setLow(ip.getLow());
         } else {
@@ -445,10 +445,10 @@ public class EmbeddedIPv4_Type extends Type {
      * @param msg is the currently worked on message
      * @param num is the address
      */
-    private void findIP(CurrMsg msg, IPv6_Int num) {
-        IPv6_Int ip = hash.get(num);
+    private void findIP(CurrMsg msg, Ipv6 num) {
+        Ipv6 ip = hash.get(num);
         if (ip == null) {
-            ip = new IPv6_Int();
+            ip = new Ipv6();
             ip.setHigh(num.getHigh());
             ip.setLow(num.getLow());
             code_ipv6_int(ip, msg);
@@ -468,7 +468,7 @@ public class EmbeddedIPv4_Type extends Type {
         v4Len = 0;
         v4Start = 0;
         if (syntax(msg)) {
-            IPv6_Int ip = ip2int(msg);
+            Ipv6 ip = ip2int(msg);
             if (cons) {
                 findIP(msg, ip);
             } else {
@@ -496,7 +496,7 @@ public class EmbeddedIPv4_Type extends Type {
         }
 
         if (bits < 1 || bits > 128) {
-            System.out.println("config error: invalid number of ipv4.bits (" + bits + "), corrected to 128");
+            System.out.println("preference error: invalid number of ipv4.bits (" + bits + "), corrected to 128");
             bits = 128;
         }
 
@@ -513,7 +513,7 @@ public class EmbeddedIPv4_Type extends Type {
         }
 
         if (cons) {
-            hash = new Hashtable<IPv6_Int, IPv6_Int>();
+            hash = new Hashtable<Ipv6, Ipv6>();
         }
     }
 
@@ -521,7 +521,7 @@ public class EmbeddedIPv4_Type extends Type {
     /**
      * default constructor, initializes defaults
      */
-    public EmbeddedIPv4_Type() {
+    public EmbeddedIpv4AnonType() {
         v4Len = 0;
         v4Start = 0;
         bits = 96;

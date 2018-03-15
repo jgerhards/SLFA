@@ -1,6 +1,6 @@
-package com.rsyslog.slfa.types;
+package com.rsyslog.slfa.anonymization;
 
-import com.rsyslog.slfa.file.CurrMsg;
+import com.rsyslog.slfa.model.CurrMsg;
 
 import java.util.Hashtable;
 import java.util.Properties;
@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  *
  * @author Jan Gerhards
  */
-public class Regex_Type extends Type {
+public class RegexAnonType extends AnonType {
     private enum anonmode {REPLACE, RANDOM}
 
     ;
@@ -203,7 +203,7 @@ public class Regex_Type extends Type {
     /**
      * default constructor, initializes defaults
      */
-    public Regex_Type(int name) {
+    public RegexAnonType(int name) {
         jumpover = false;
         num = name;
         mode = anonmode.RANDOM;

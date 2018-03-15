@@ -1,6 +1,7 @@
-package com.rsyslog.slfa.types;
+package com.rsyslog.slfa.anonymization;
 
-import com.rsyslog.slfa.file.CurrMsg;
+import com.rsyslog.slfa.model.CurrMsg;
+import com.rsyslog.slfa.model.Ipv6;
 
 import java.util.Hashtable;
 import java.util.Properties;
@@ -12,7 +13,7 @@ import java.util.Random;
  *
  * @author Jan Gerhards
  */
-public class IPv6_Type extends Type {
+public class Ipv6AnonType extends AnonType {
 
     private enum anonmode {ZERO, RANDOM}
 
@@ -20,7 +21,7 @@ public class IPv6_Type extends Type {
     private anonmode mode;
     private boolean cons;
     private int bits;
-    Hashtable<IPv6_Int, IPv6_Int> hash;
+    Hashtable<Ipv6, Ipv6> hash;
 
 
     /**
@@ -163,14 +164,14 @@ public class IPv6_Type extends Type {
 
 
     /**
-     * converts the IPv6 address in a message to an IPv6_Int
+     * converts the IPv6 address in a message to an Ipv6
      * starting at the current index of the message.
      *
      * @param msg is the message
      * @return the ip address in the message starting at the current index
      */
-    private IPv6_Int ip2int(CurrMsg msg) {
-        IPv6_Int ip = new IPv6_Int();
+    private Ipv6 ip2int(CurrMsg msg) {
+        Ipv6 ip = new Ipv6();
         int num[] = {0, 0, 0, 0, 0, 0, 0, 0};
         int cyc = 0;
         int dots = 0;
@@ -232,11 +233,11 @@ public class IPv6_Type extends Type {
     /**
      * anonymizes an ip address
      *
-     * @param ip   is the address to anonymize represented as an IPv6_Int
+     * @param ip   is the address to anonymize represented as an Ipv6
      * @param rand is the randomizer
-     * @return the anonymized address as an IPv6_Int
+     * @return the anonymized address as an Ipv6
      */
-    private void code_ipv6_int(IPv6_Int ip, CurrMsg msg) {
+    private void code_ipv6_int(Ipv6 ip, CurrMsg msg) {
         Random rand = msg.getRand();
         int bitscpy = bits;
 
@@ -274,19 +275,19 @@ public class IPv6_Type extends Type {
     }
 
     /**
-     * converts an IPv6_Int to a string representation of an IPv6 address
+     * converts an Ipv6 to a string representation of an IPv6 address
      * and appends it to the output buffer of a message
      *
      * @param ip  is the ip address
      * @param msg is the message to append to
      */
-    private void appendIP(IPv6_Int ip, CurrMsg msg) {
+    private void appendIP(Ipv6 ip, CurrMsg msg) {
         int num[] = new int[8];
         int i;
-        IPv6_Int ipcpy;
+        Ipv6 ipcpy;
 
         if (cons) {
-            ipcpy = new IPv6_Int();
+            ipcpy = new Ipv6();
             ipcpy.setHigh(ip.getHigh());
             ipcpy.setLow(ip.getLow());
         } else {
@@ -320,10 +321,10 @@ public class IPv6_Type extends Type {
      * @param msg is the currently worked on message
      * @param num is the address
      */
-    private void findIP(CurrMsg msg, IPv6_Int num) {
-        IPv6_Int ip = hash.get(num);
+    private void findIP(CurrMsg msg, Ipv6 num) {
+        Ipv6 ip = hash.get(num);
         if (ip == null) {
-            ip = new IPv6_Int();
+            ip = new Ipv6();
             ip.setHigh(num.getHigh());
             ip.setLow(num.getLow());
             code_ipv6_int(ip, msg);
@@ -341,7 +342,7 @@ public class IPv6_Type extends Type {
     @Override
     public void anon(CurrMsg msg) {
         if (syntax(msg)) {
-            IPv6_Int ip = ip2int(msg);
+            Ipv6 ip = ip2int(msg);
             if (cons) {
                 findIP(msg, ip);
             } else {
@@ -369,7 +370,7 @@ public class IPv6_Type extends Type {
         }
 
         if (bits < 1 || bits > 128) {
-            System.out.println("config error: invalid number of ipv4.bits (" + bits + "), corrected to 128");
+            System.out.println("preference error: invalid number of ipv4.bits (" + bits + "), corrected to 128");
             bits = 128;
         }
 
@@ -386,7 +387,7 @@ public class IPv6_Type extends Type {
         }
 
         if (cons) {
-            hash = new Hashtable<IPv6_Int, IPv6_Int>();
+            hash = new Hashtable<Ipv6, Ipv6>();
         }
     }
 
@@ -394,7 +395,7 @@ public class IPv6_Type extends Type {
     /**
      * default constructor, initializes defaults
      */
-    public IPv6_Type() {
+    public Ipv6AnonType() {
         bits = 96;
         mode = anonmode.ZERO;
         cons = false;

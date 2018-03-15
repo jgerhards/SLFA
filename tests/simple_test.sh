@@ -10,7 +10,8 @@ cd "$PROJECTDIR"
 echo 'anonymizer=ipv4
 ' > "$TESTCONF"
 
-cd "$PROJECTDIR/build/classes/main"
+cd "$PROJECTDIR/build/classes"
+[ -d "java/main" ] && cd "java/main" || cd "main"
 
 echo 'no ip address
 1.1.172.3

@@ -1,28 +1,26 @@
-package com.rsyslog.slfa.types;
+package com.rsyslog.slfa.anonymization;
 
-import com.rsyslog.slfa.file.CurrMsg;
+import com.rsyslog.slfa.model.CurrMsg;
 
 import java.util.Properties;
 
 /**
- * abstract class for all anonymization types
+ * abstract class for all anonymization anonymization
  *
  * @author jan
  */
-public abstract class Type {
+public abstract class AnonType {
 
     /**
      * function to call for every type before a new file is processed
      */
     public void onFileStart() {
-        return;
     }
 
     /**
      * function to call for every type after a file has been processsed
      */
     public void onFileEnd() {
-        return;
     }
 
     /**
@@ -32,7 +30,7 @@ public abstract class Type {
     public abstract void anon(CurrMsg msg);
 
     /**
-     * reads the parameters for the type out of the config file
+     * reads the parameters for the type out of the preference file
      *
      * @param prop is the property to read out of
      */

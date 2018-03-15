@@ -1,6 +1,6 @@
-package com.rsyslog.slfa.file;
+package com.rsyslog.slfa.model;
 
-import com.rsyslog.slfa.types.Type;
+import com.rsyslog.slfa.anonymization.AnonType;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -13,16 +13,16 @@ import java.util.Random;
  */
 public class LogFile {
     private BufferedReader fileRd;
-    private ArrayList<Type> list;
+    private ArrayList<AnonType> list;
     private Random rand;
 
     /**
      * default constructor for a LogFile with an filepath as parameter
      *
      * @param path     is the path to the log file
-     * @param typelist is a list of anonymization types
+     * @param typelist is a list of anonymization anonymization
      */
-    public LogFile(String path, ArrayList<Type> typelist) {
+    public LogFile(String path, ArrayList<AnonType> typelist) {
         FileReader fr = null;
         try {
             fr = new FileReader(path);
@@ -37,9 +37,9 @@ public class LogFile {
      * Constructor for a LogFile with an InputStream
      *
      * @param input    an InputStream
-     * @param typelist is a list of anonymization types
+     * @param typelist is a list of anonymization anonymization
      */
-    public LogFile(InputStream input, ArrayList<Type> typelist) {
+    public LogFile(InputStream input, ArrayList<AnonType> typelist) {
         InputStreamReader isr = new InputStreamReader(input);
         init(isr, typelist);
     }
@@ -48,9 +48,9 @@ public class LogFile {
      * Do init with params
      *
      * @param reader   reader to be set
-     * @param typelist is a list of anonymization types
+     * @param typelist is a list of anonymization anonymization
      */
-    private void init(InputStreamReader reader, ArrayList<Type> typelist) {
+    private void init(InputStreamReader reader, ArrayList<AnonType> typelist) {
         list = typelist;
         int listsize = list.size();
         for (int i = 0; i < listsize; i++) {

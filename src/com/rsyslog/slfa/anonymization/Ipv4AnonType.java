@@ -1,6 +1,6 @@
-package com.rsyslog.slfa.types;
+package com.rsyslog.slfa.anonymization;
 
-import com.rsyslog.slfa.file.CurrMsg;
+import com.rsyslog.slfa.model.CurrMsg;
 
 import java.util.Hashtable;
 import java.util.Properties;
@@ -11,7 +11,7 @@ import java.util.Random;
  *
  * @author Jan Gerhards
  */
-public class IPv4_Type extends Type {
+public class Ipv4AnonType extends AnonType {
 
     private enum ipv4mode {ZERO, RANDOM}
 
@@ -213,7 +213,7 @@ public class IPv4_Type extends Type {
     /**
      * default constructor, initializes defaults
      */
-    public IPv4_Type() {
+    public Ipv4AnonType() {
         ipParts = new int[4];
         bits = 16;
         mode = ipv4mode.ZERO;
@@ -236,7 +236,7 @@ public class IPv4_Type extends Type {
         }
 
         if (bits < 1 || bits > 32) {
-            System.out.println("config error: invalid number of ipv4.bits (" + bits + "), corrected to 32");
+            System.out.println("preference error: invalid number of ipv4.bits (" + bits + "), corrected to 32");
             bits = 32;
         }
 

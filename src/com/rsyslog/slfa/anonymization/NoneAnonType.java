@@ -1,6 +1,6 @@
-package com.rsyslog.slfa.types;
+package com.rsyslog.slfa.anonymization;
 
-import com.rsyslog.slfa.file.CurrMsg;
+import com.rsyslog.slfa.model.CurrMsg;
 
 import java.util.Properties;
 
@@ -9,7 +9,7 @@ import java.util.Properties;
  *
  * @author Jan Gerhards
  */
-public class Char_Type extends Type {
+public class NoneAnonType extends AnonType {
 
 
     /**
@@ -28,7 +28,5 @@ public class Char_Type extends Type {
      */
     @Override
     public void getConfig(Properties prop) {
-        return;
     }
-
 }
