@@ -165,3 +165,9 @@ ipv4.mode=zero
 ipv6.bits=112
 ipv6.mode=random-consistent
 ```
+
+## Development
+If you want to start contributing to slfa, you can work with any IDE.
+* To prepare the project to be edited with Eclipse, you can prepare the project using `./gradlew eclipse`
+* Same for IntelliJ, you can prepare the project using `./gradlew idea`
+* Most likely you already have `gradle` installed on your system, then you can use that instead of gradlew.
