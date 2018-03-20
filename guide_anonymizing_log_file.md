@@ -1,7 +1,7 @@
 # How to anonymize a log file
 
 To anonymize data with SLFA you need three files:
-1. the programm as a jar file (here: SLFA.jar)
+1. the programm as a jar file (here: slfa.jar)
 2. the configuration file (here: config.txt)
 3. the file to be anonymized (here: access.log)
 
@@ -42,14 +42,14 @@ The anonymized file will be forwarded to stdout so it is recommended to redirect
 In our example the command would look like this:
 
 '''
-java -Dconfigfile=config.txt -jar SLFA.jar access.log > output.log
+java -Dconfigfile=config.txt -jar slfa.jar access.log > output.log
 '''
 
 Like this you will have your anonymized version of access.log in output.log.
 
 Slfa also allows to read from standard input:
 ```
-cat access.log | java -Dstdin -Dconfigfile=PATH_TO_CONFIG_FILE -jar SLFA.jar
+cat access.log | java -Dstdin -Dconfigfile=PATH_TO_CONFIG_FILE -jar slfa.jar
 ```
 
 You can execute the following commands to get started with Slfa and to anonymize some logfile:
@@ -60,9 +60,9 @@ cd SLFA
 gradle jar
 
 # Example for a plaintext file - using file parameter
-java -Dstdin -Dconfigfile=conf/example-slfa-all-ip-half.properties -jar build/libs/SLFA.jar "/var/log/apache2/access.log"  > anon.log
+java -Dstdin -Dconfigfile=conf/example-slfa-all-ip-half.properties -jar build/libs/slfa.jar "/var/log/apache2/access.log"  > anon.log
 # Example for a plaintext file - using stdin
-cat "/var/log/apache2/access.log"  |  java -Dstdin -Dconfigfile=conf/example-slfa-all-ip-half.properties -jar build/libs/SLFA.jar > anon.log
+cat "/var/log/apache2/access.log"  |  java -Dstdin -Dconfigfile=conf/example-slfa-all-ip-half.properties -jar build/libs/slfa.jar > anon.log
 # Example for a packed file
-zcat "/var/log/apache2/access.log.2.gz"  |  java -Dstdin -Dconfigfile=conf/example-slfa-all-ip-half.properties -jar build/libs/SLFA.jar > anon.log
+zcat "/var/log/apache2/access.log.2.gz"  |  java -Dstdin -Dconfigfile=conf/example-slfa-all-ip-half.properties -jar build/libs/slfa.jar > anon.log
 ```
