@@ -22,7 +22,7 @@ Following the starting command itself are the names of files to be anonymized. S
 
 Slfa also allows to read from standard input:
 ```
-zcat access.log.2.gz | java -Dstdin -Dconfigfile=PATH_TO_CONFIG_FILE -jar SLFA.jar
+zcat access.log.2.gz | java -Dstdin -Dconfigfile=PATH_TO_CONFIG_FILE -jar slfa.jar
 ```
 
 
@@ -34,11 +34,11 @@ cd SLFA
 gradle jar
 
 # Example for a plaintext file - using file parameter
-java -Dconfigfile=conf/example-slfa-all-ip-half.properties -jar build/libs/SLFA.jar "/var/log/apache2/access.log"  > anon.log
+java -Dconfigfile=conf/example-slfa-all-ip-half.properties -jar build/libs/slfa.jar "/var/log/apache2/access.log"  > anon.log
 # Example for a plaintext file - using stdin
-cat "/var/log/apache2/access.log" | java -Dstdin -Dconfigfile=conf/example-slfa-all-ip-half.properties -jar build/libs/SLFA.jar > anon.log
+cat "/var/log/apache2/access.log" | java -Dstdin -Dconfigfile=conf/example-slfa-all-ip-half.properties -jar build/libs/slfa.jar > anon.log
 # Example for a packed file
-zcat "/var/log/apache2/access.log.2.gz" | java -Dstdin -Dconfigfile=conf/example-slfa-all-ip-half.properties -jar build/libs/SLFA.jar > anon.log
+zcat "/var/log/apache2/access.log.2.gz" | java -Dstdin -Dconfigfile=conf/example-slfa-all-ip-half.properties -jar build/libs/slfa.jar > anon.log
 ```
 
 
