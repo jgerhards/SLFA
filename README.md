@@ -171,3 +171,8 @@ If you want to start contributing to slfa, you can work with any IDE.
 * To prepare the project to be edited with Eclipse, you can prepare the project using `./gradlew eclipse`
 * Same for IntelliJ, you can prepare the project using `./gradlew idea`
 * Most likely you already have `gradle` installed on your system, then you can use that instead of gradlew.
+
+## Contributing
+* please submit contributions as PR on github
+* CI (testbench and static analyzer) is automatically run on the PR
+* CI must be error free for merging
