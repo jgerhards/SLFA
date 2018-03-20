@@ -389,9 +389,9 @@ public class EmbeddedIpv4AnonType extends AnonType {
      * @return true, if the message starts with an IPv6 address
      * at the current index, else false
      */
-    private Boolean syntax(CurrMsg msg) {
-        Boolean lastSep = false;
-        Boolean hadAbbrev = false;
+    private boolean syntax(CurrMsg msg) {
+        boolean lastSep = false;
+        boolean hadAbbrev = false;
         int ipParts = 0;
         int numLen;
         int buflen = msg.getMsgIn().length();
