@@ -80,13 +80,8 @@ public class Config {
         try {
             prop = new Properties();
             inputStream = new FileInputStream(filepath);
-
-            if (inputStream != null) {
-                prop.load(inputStream);
-                return readConfigFile(prop);
-            } else {
-                throw new FileNotFoundException("property file '" + filepath + "' not found");
-            }
+            prop.load(inputStream);
+            return readConfigFile(prop);
         } catch (Exception e) {
             System.out.println("Error opening configuration file (" + filepath + "), program will exit");
             return null;
