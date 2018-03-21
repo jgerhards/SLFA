@@ -49,8 +49,12 @@ public class Config {
                 list.add(new EmbeddedIpv4AnonType());
             } else if (split[i].equals("regex")) {
                 i++;
-                int numreg = Integer.parseUnsignedInt(split[i]);
-                list.add(new RegexAnonType(numreg));
+                if(i < splitnum) {
+                	int numreg = Integer.parseUnsignedInt(split[i]);
+                	list.add(new RegexAnonType(numreg));
+                } else {
+                	System.out.println("error: last regexanonymizer must be assigned a number");
+                }
             } else {
                 System.out.println("error: unknown anonymization type '" + split[i] + "' ignored");
             }
