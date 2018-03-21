@@ -1,6 +1,6 @@
 package com.rsyslog.slfa.anonymization;
 
-import com.rsyslog.slfa.model.CurrMsg;
+import com.rsyslog.slfa.model.LogMessage;
 
 import java.util.Hashtable;
 import java.util.Properties;
@@ -33,10 +33,10 @@ public class Ipv4AnonType extends AnonType {
      * @param j   the position to start reading the message
      * @return the starting position with the length of the integer added
      */
-    private int getposint(CurrMsg msg, int i, int j) {
+    private int getposint(LogMessage msg, int i, int j) {
         ipParts[i] = -1;
-        while (j < msg.getMsgIn().length()) {
-            char c = msg.getMsgIn().charAt(j);
+        while (j < msg.getInputMessage().length()) {
+            char c = msg.getInputMessage().charAt(j);
             if ('0' <= c && c <= '9') {
                 if (ipParts[i] == -1) {
                     ipParts[i] = 0;
@@ -58,16 +58,16 @@ public class Ipv4AnonType extends AnonType {
      * @param msg is the messgae to check
      * @return true if is contains an IPv4 address at the current index, else false
      */
-    private Boolean syntax(CurrMsg msg) {
+    private Boolean syntax(LogMessage msg) {
         Boolean isIP = false;
-        int i = msg.getCurrIdx();
-        int msglen = msg.getMsgIn().length();
+        int i = msg.getCurrentIndex();
+        int msglen = msg.getInputMessage().length();
 
         i = getposint(msg, 0, i);
         if (ipParts[0] < 0 || ipParts[0] > 255) {
             return isIP;
         }
-        if (i >= msglen || msg.getMsgIn().charAt(i) != '.') {
+        if (i >= msglen || msg.getInputMessage().charAt(i) != '.') {
             return isIP;
         }
         i++;
@@ -76,7 +76,7 @@ public class Ipv4AnonType extends AnonType {
         if (ipParts[1] < 0 || ipParts[1] > 255) {
             return isIP;
         }
-        if (i >= msglen || msg.getMsgIn().charAt(i) != '.') {
+        if (i >= msglen || msg.getInputMessage().charAt(i) != '.') {
             return isIP;
         }
         i++;
@@ -85,7 +85,7 @@ public class Ipv4AnonType extends AnonType {
         if (ipParts[2] < 0 || ipParts[2] > 255) {
             return isIP;
         }
-        if (i >= msglen || msg.getMsgIn().charAt(i) != '.') {
+        if (i >= msglen || msg.getInputMessage().charAt(i) != '.') {
             return isIP;
         }
         i++;
@@ -95,7 +95,7 @@ public class Ipv4AnonType extends AnonType {
             return isIP;
         }
 
-        msg.setNprocessed(i - msg.getCurrIdx());
+        msg.setProcessedChars(i - msg.getCurrentIndex());
         isIP = true;
         return isIP;
     }
@@ -156,7 +156,7 @@ public class Ipv4AnonType extends AnonType {
      * @param num is the ip address to convert and append
      * @param msg is the message to append to
      */
-    private void appendIP(int num, CurrMsg msg) {
+    private void appendIP(int num, LogMessage msg) {
         int parts[] = new int[4];
 
         for (int i = 3; i >= 0; i--) {
@@ -164,11 +164,11 @@ public class Ipv4AnonType extends AnonType {
             num >>>= 8;
         }
         for (int i = 0; i < 3; i++) {
-            msg.getMsgOut().append(parts[i]);
-            msg.getMsgOut().append('.');
+            msg.getOutputBuffer().append(parts[i]);
+            msg.getOutputBuffer().append('.');
             num >>>= 8;
         }
-        msg.getMsgOut().append(parts[3]);
+        msg.getOutputBuffer().append(parts[3]);
     }
 
     /**
@@ -179,7 +179,7 @@ public class Ipv4AnonType extends AnonType {
      * @param num is the address represented as an integer
      * @param msg is the currently worked on message
      */
-    private void findIP(int num, CurrMsg msg) {
+    private void findIP(int num, LogMessage msg) {
         Integer ip = (Integer) hash.get(num);
         if (ip == null) {
             ip = codeInt(num, msg.getRand());
@@ -195,7 +195,7 @@ public class Ipv4AnonType extends AnonType {
      * @param msg is the message to anonymize
      */
     @Override
-    public void anon(CurrMsg msg) {
+    public void anon(LogMessage msg) {
         int intAddress;
 
         if (syntax(msg)) {

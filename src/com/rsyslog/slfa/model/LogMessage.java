@@ -7,29 +7,31 @@ import java.util.Random;
  *
  * @author Jan Gerhards
  */
-public class CurrMsg {
-    private String msgIn;
-    private StringBuffer msgOut;
-    private int nprocessed;
-    private int currIdx;
-    private Random rand;
+public class LogMessage {
+    private static final Random RAND = new Random(System.currentTimeMillis());
+
+    private final StringBuffer _outputBuffer = new StringBuffer();
+    private String _inputMessage;
+    private int _processedChars;
+    private int _currentIndex;
 
     /**
      * getter for the message that is currently being processed
      *
      * @return the message
      */
-    public String getMsgIn() {
-        return msgIn;
+    public String getInputMessage() {
+        return _inputMessage;
     }
 
     /**
      * setter for the message being worked on
      *
-     * @param msgIn is the new message
+     * @param inputMessage is the new message
      */
-    public void setMsgIn(String msgIn) {
-        this.msgIn = msgIn;
+    public void setInputMessage(String inputMessage) {
+        _inputMessage = inputMessage;
+        _currentIndex = 0;
     }
 
     /**
@@ -37,17 +39,8 @@ public class CurrMsg {
      *
      * @return output buffer
      */
-    public StringBuffer getMsgOut() {
-        return msgOut;
-    }
-
-    /**
-     * setter for the output buffer
-     *
-     * @param msgOut is the output buffer
-     */
-    public void setMsgOut(StringBuffer msgOut) {
-        this.msgOut = msgOut;
+    public StringBuffer getOutputBuffer() {
+        return _outputBuffer;
     }
 
     /**
@@ -57,8 +50,8 @@ public class CurrMsg {
      *
      * @return the number of processed characters
      */
-    public int getNprocessed() {
-        return nprocessed;
+    public int getProcessedChars() {
+        return _processedChars;
     }
 
     /**
@@ -66,10 +59,10 @@ public class CurrMsg {
      * note: this refers to the character processed by an anonymization
      * type, not the current index
      *
-     * @param nprocessed is the number of characters processed
+     * @param processedChars is the number of characters processed
      */
-    public void setNprocessed(int nprocessed) {
-        this.nprocessed = nprocessed;
+    public void setProcessedChars(int processedChars) {
+        _processedChars = processedChars;
     }
 
     /**
@@ -77,8 +70,8 @@ public class CurrMsg {
      *
      * @param toAdd is the value to add
      */
-    public void addNprocessed(int toAdd) {
-        this.nprocessed += toAdd;
+    public void increaseProcessedChars(int toAdd) {
+        _processedChars += toAdd;
     }
 
     /**
@@ -86,17 +79,17 @@ public class CurrMsg {
      *
      * @return the current index
      */
-    public int getCurrIdx() {
-        return currIdx;
+    public int getCurrentIndex() {
+        return _currentIndex;
     }
 
     /**
      * setter for the current index
      *
-     * @param currIdx is the current index
+     * @param currentIndex is the current index
      */
-    public void setCurrIdx(int currIdx) {
-        this.currIdx = currIdx;
+    public void setCurrentIndex(int currentIndex) {
+        _currentIndex = currentIndex;
     }
 
     /**
@@ -105,24 +98,16 @@ public class CurrMsg {
      * @return rand
      */
     public Random getRand() {
-        return rand;
+        return RAND;
     }
-
-    /**
-     * setter for the randomizer
-     *
-     * @param rand is the randomizer
-     */
-    public void setRand(Random rand) {
-        this.rand = rand;
-    }
-
 
     /**
      * prints the anonymized message on StdOut and deletes the output buffer
      */
     public void endMsg() {
-        System.out.println(msgOut);
-        msgOut.delete(0, msgOut.length());
+        System.out.println(_outputBuffer);
+        if (_outputBuffer.length() > 0) {
+            _outputBuffer.delete(0, _outputBuffer.length());
+        }
     }
 }

@@ -1,6 +1,6 @@
 package com.rsyslog.slfa.anonymization;
 
-import com.rsyslog.slfa.model.CurrMsg;
+import com.rsyslog.slfa.model.LogMessage;
 import com.rsyslog.slfa.model.Ipv6;
 
 import java.util.Hashtable;
@@ -32,13 +32,13 @@ public class Ipv6AnonType extends AnonType {
      * @param msg is the message
      * @return the length of the hexadecimal number or -1 if the first character is ':'
      */
-    private int validHexVal(CurrMsg msg) {
-        int buflen = msg.getMsgIn().length();
-        int idx = msg.getCurrIdx() + msg.getNprocessed();
+    private int validHexVal(LogMessage msg) {
+        int buflen = msg.getInputMessage().length();
+        int idx = msg.getCurrentIndex() + msg.getProcessedChars();
         int cyc = 0;
 
         while (idx < buflen) {
-            switch (msg.getMsgIn().charAt(idx)) {
+            switch (msg.getInputMessage().charAt(idx)) {
                 case '0':
                 case '1':
                 case '2':
@@ -64,14 +64,14 @@ public class Ipv6AnonType extends AnonType {
                 case 'E':
                 case 'F':
                     cyc++;
-                    msg.setNprocessed(msg.getNprocessed() + 1);
+                    msg.setProcessedChars(msg.getProcessedChars() + 1);
                     if (cyc == 5) {
                         return 0;
                     }
                     break;
                 case ':':
                     if (cyc == 0) {
-                        msg.setNprocessed(msg.getNprocessed() + 1);
+                        msg.setProcessedChars(msg.getProcessedChars() + 1);
                         return -1;
                     }  //no break so it return cyc if cyc != 0
                 default:
@@ -91,15 +91,15 @@ public class Ipv6AnonType extends AnonType {
      * @return true, if the message starts with an IPv6 address
      * at the current index, else false
      */
-    private boolean syntax(CurrMsg msg) {
+    private boolean syntax(LogMessage msg) {
         boolean lastSep = false;
         boolean hadAbbrev = false;
         boolean lastAbbrev = false;
         int ipParts = 0;
         int numLen;
-        int buflen = msg.getMsgIn().length();
+        int buflen = msg.getInputMessage().length();
 
-        while (msg.getNprocessed() < buflen) {
+        while (msg.getProcessedChars() < buflen) {
             numLen = validHexVal(msg);
             if (numLen > 0) {  //found a valid num
                 if ((ipParts == 7 && hadAbbrev) || ipParts > 7) {
@@ -170,18 +170,18 @@ public class Ipv6AnonType extends AnonType {
      * @param msg is the message
      * @return the ip address in the message starting at the current index
      */
-    private Ipv6 ip2int(CurrMsg msg) {
+    private Ipv6 ip2int(LogMessage msg) {
         Ipv6 ip = new Ipv6();
         int num[] = {0, 0, 0, 0, 0, 0, 0, 0};
         int cyc = 0;
         int dots = 0;
         int val;
         int i;
-        int iplen = msg.getNprocessed();
+        int iplen = msg.getProcessedChars();
 
-        int endIP = msg.getCurrIdx() + iplen;
-        for (i = msg.getCurrIdx(); i < endIP && dots < 2; i++) {
-            val = getHexVal(msg.getMsgIn().charAt(i));
+        int endIP = msg.getCurrentIndex() + iplen;
+        for (i = msg.getCurrentIndex(); i < endIP && dots < 2; i++) {
+            val = getHexVal(msg.getInputMessage().charAt(i));
             if (val == -1) {
                 dots++;
                 if (dots < 2) {
@@ -197,7 +197,7 @@ public class Ipv6AnonType extends AnonType {
                 int shift = 0;
                 cyc = 7;
                 for (int j = iplen - 1; j >= i; j--) {
-                    val = getHexVal(msg.getMsgIn().charAt(j));
+                    val = getHexVal(msg.getInputMessage().charAt(j));
                     if (val == -1) {
                         cyc--;
                         shift = 0;
@@ -237,7 +237,7 @@ public class Ipv6AnonType extends AnonType {
      * @param rand is the randomizer
      * @return the anonymized address as an Ipv6
      */
-    private void code_ipv6_int(Ipv6 ip, CurrMsg msg) {
+    private void code_ipv6_int(Ipv6 ip, LogMessage msg) {
         Random rand = msg.getRand();
         int bitscpy = bits;
 
@@ -281,7 +281,7 @@ public class Ipv6AnonType extends AnonType {
      * @param ip  is the ip address
      * @param msg is the message to append to
      */
-    private void appendIP(Ipv6 ip, CurrMsg msg) {
+    private void appendIP(Ipv6 ip, LogMessage msg) {
         int num[] = new int[8];
         int i;
         Ipv6 ipcpy;
@@ -305,10 +305,10 @@ public class Ipv6AnonType extends AnonType {
         }
 
         for (int j = 0; j < 7; j++) {
-            msg.getMsgOut().append(Integer.toHexString(num[j]));
-            msg.getMsgOut().append(':');
+            msg.getOutputBuffer().append(Integer.toHexString(num[j]));
+            msg.getOutputBuffer().append(':');
         }
-        msg.getMsgOut().append(Integer.toHexString(num[7]));
+        msg.getOutputBuffer().append(Integer.toHexString(num[7]));
 
     }
 
@@ -321,7 +321,7 @@ public class Ipv6AnonType extends AnonType {
      * @param msg is the currently worked on message
      * @param num is the address
      */
-    private void findIP(CurrMsg msg, Ipv6 num) {
+    private void findIP(LogMessage msg, Ipv6 num) {
         Ipv6 ip = hash.get(num);
         if (ip == null) {
             ip = new Ipv6();
@@ -340,7 +340,7 @@ public class Ipv6AnonType extends AnonType {
      * @param msg is the message to anonymize
      */
     @Override
-    public void anon(CurrMsg msg) {
+    public void anon(LogMessage msg) {
         if (syntax(msg)) {
             Ipv6 ip = ip2int(msg);
             if (cons) {
@@ -350,7 +350,7 @@ public class Ipv6AnonType extends AnonType {
                 appendIP(ip, msg);
             }
         } else {
-            msg.setNprocessed(0);
+            msg.setProcessedChars(0);
         }
     }
 

@@ -1,6 +1,6 @@
 package com.rsyslog.slfa.anonymization;
 
-import com.rsyslog.slfa.model.CurrMsg;
+import com.rsyslog.slfa.model.LogMessage;
 import com.rsyslog.slfa.model.Ipv6;
 
 import java.util.Hashtable;
@@ -36,10 +36,10 @@ public class EmbeddedIpv4AnonType extends AnonType {
      * @param j   the position to start reading the message
      * @return the starting position with the length of the integer added
      */
-    private int getposint(CurrMsg msg, int i, int j) {
+    private int getposint(LogMessage msg, int i, int j) {
         ipParts[i] = -1;
-        while (j < msg.getMsgIn().length()) {
-            char c = msg.getMsgIn().charAt(j);
+        while (j < msg.getInputMessage().length()) {
+            char c = msg.getInputMessage().charAt(j);
             if ('0' <= c && c <= '9') {
                 if (ipParts[i] == -1) {
                     ipParts[i] = 0;
@@ -81,19 +81,19 @@ public class EmbeddedIpv4AnonType extends AnonType {
      * @param msg is the message to check in
      * @return true if it contains an IPv4 address, else false
      */
-    private Boolean syntaxV4(CurrMsg msg) {
+    private Boolean syntaxV4(LogMessage msg) {
         ipParts = new int[4];
 
         Boolean isIP = false;
         int oldIdx = v4Start;
         int i = oldIdx;
-        int msglen = msg.getMsgIn().length();
+        int msglen = msg.getInputMessage().length();
 
         i = getposint(msg, 0, i);
         if (ipParts[0] < 0 || ipParts[0] > 255) {
             return isIP;
         }
-        if (i >= msglen || msg.getMsgIn().charAt(i) != '.') {
+        if (i >= msglen || msg.getInputMessage().charAt(i) != '.') {
             return isIP;
         }
         i++;
@@ -102,7 +102,7 @@ public class EmbeddedIpv4AnonType extends AnonType {
         if (ipParts[1] < 0 || ipParts[1] > 255) {
             return isIP;
         }
-        if (i >= msglen || msg.getMsgIn().charAt(i) != '.') {
+        if (i >= msglen || msg.getInputMessage().charAt(i) != '.') {
             return isIP;
         }
         i++;
@@ -111,7 +111,7 @@ public class EmbeddedIpv4AnonType extends AnonType {
         if (ipParts[2] < 0 || ipParts[2] > 255) {
             return isIP;
         }
-        if (i >= msglen || msg.getMsgIn().charAt(i) != '.') {
+        if (i >= msglen || msg.getInputMessage().charAt(i) != '.') {
             return isIP;
         }
         i++;
@@ -135,13 +135,13 @@ public class EmbeddedIpv4AnonType extends AnonType {
      * @param msg is the message
      * @return the length of the hexadecimal number; also -1 if the first character is ':' or -2 if it is '.'
      */
-    private int validHexVal(CurrMsg msg) { //please note: this is a similar function to the one in Ipv6AnonType, but not the same
-        int buflen = msg.getMsgIn().length();
-        int idx = msg.getCurrIdx() + msg.getNprocessed();
+    private int validHexVal(LogMessage msg) { //please note: this is a similar function to the one in Ipv6AnonType, but not the same
+        int buflen = msg.getInputMessage().length();
+        int idx = msg.getCurrentIndex() + msg.getProcessedChars();
         int cyc = 0;
 
         while (idx < buflen) {
-            switch (msg.getMsgIn().charAt(idx)) {
+            switch (msg.getInputMessage().charAt(idx)) {
                 case '0':
                 case '1':
                 case '2':
@@ -167,19 +167,19 @@ public class EmbeddedIpv4AnonType extends AnonType {
                 case 'E':
                 case 'F':
                     cyc++;
-                    msg.addNprocessed(1);
+                    msg.increaseProcessedChars(1);
                     if (cyc == 5) {
                         return 0;
                     }
                     break;
                 case '.':
                     if (cyc == 0) {
-                        msg.addNprocessed(1);
+                        msg.increaseProcessedChars(1);
                         return -2;
                     }
                 case ':':
                     if (cyc == 0) {
-                        msg.addNprocessed(1);
+                        msg.increaseProcessedChars(1);
                         return -1;
                     }
                     return cyc;
@@ -200,9 +200,9 @@ public class EmbeddedIpv4AnonType extends AnonType {
      * @param dotPos is the position of the first dot of the IPv4 part in the message
      * @return the start of the IPv4 part in the address
      */
-    private int findV4Start(CurrMsg msg, int dotPos) {
+    private int findV4Start(LogMessage msg, int dotPos) {
         while (dotPos > 0) {
-            if (msg.getMsgIn().charAt(dotPos) == ':') {
+            if (msg.getInputMessage().charAt(dotPos) == ':') {
                 return dotPos + 1;
             }
             dotPos--;
@@ -218,17 +218,17 @@ public class EmbeddedIpv4AnonType extends AnonType {
      * @param msg is the message
      * @return the ip address in the message starting at the current index
      */
-    private Ipv6 ip2int(CurrMsg msg) {
+    private Ipv6 ip2int(LogMessage msg) {
         Ipv6 ip = new Ipv6();
         int num[] = {0, 0, 0, 0, 0, 0};
         int cyc = 0;
         int dots = 0;
         int val;
         int i;
-        int iplen = msg.getNprocessed();
+        int iplen = msg.getProcessedChars();
 
-        for (i = msg.getCurrIdx(); i < v4Start && dots < 2; i++) {
-            val = getHexVal(msg.getMsgIn().charAt(i));
+        for (i = msg.getCurrentIndex(); i < v4Start && dots < 2; i++) {
+            val = getHexVal(msg.getInputMessage().charAt(i));
             if (val == -1) {
                 dots++;
                 if (dots < 2) {
@@ -244,7 +244,7 @@ public class EmbeddedIpv4AnonType extends AnonType {
                 int shift = 0;
                 cyc = 5;
                 for (int j = v4Start - 1; j >= i; j--) {
-                    val = getHexVal(msg.getMsgIn().charAt(j));
+                    val = getHexVal(msg.getInputMessage().charAt(j));
                     if (val == -1) {
                         cyc--;
                         shift = 0;
@@ -283,7 +283,7 @@ public class EmbeddedIpv4AnonType extends AnonType {
      * @param ip is the address to anonymize represented as an Ipv6
      * @return the anonymized address as an Ipv6
      */
-    private void code_ipv6_int(Ipv6 ip, CurrMsg msg) {
+    private void code_ipv6_int(Ipv6 ip, LogMessage msg) {
         Random rand = msg.getRand();
         int bitscpy = bits;
 
@@ -327,7 +327,7 @@ public class EmbeddedIpv4AnonType extends AnonType {
      * @param num is the IPv4 part to append
      * @param msg is the message to append to
      */
-    private void appendv4(int num, CurrMsg msg) {
+    private void appendv4(int num, LogMessage msg) {
         int parts[] = new int[4];
 
         for (int i = 3; i >= 0; i--) {
@@ -335,11 +335,11 @@ public class EmbeddedIpv4AnonType extends AnonType {
             num >>>= 8;
         }
         for (int i = 0; i < 3; i++) {
-            msg.getMsgOut().append(parts[i]);
-            msg.getMsgOut().append('.');
+            msg.getOutputBuffer().append(parts[i]);
+            msg.getOutputBuffer().append('.');
             num >>>= 8;
         }
-        msg.getMsgOut().append(parts[3]);
+        msg.getOutputBuffer().append(parts[3]);
     }
 
 
@@ -349,7 +349,7 @@ public class EmbeddedIpv4AnonType extends AnonType {
      * @param ip  is the IP to append
      * @param msg is the message to append to
      */
-    private void appendIP(Ipv6 ip, CurrMsg msg) {
+    private void appendIP(Ipv6 ip, LogMessage msg) {
         int num[] = new int[8];
         int i;
         Ipv6 ipcpy;
@@ -373,8 +373,8 @@ public class EmbeddedIpv4AnonType extends AnonType {
         }
 
         for (int j = 0; j < 6; j++) {
-            msg.getMsgOut().append(Integer.toHexString(num[j]));
-            msg.getMsgOut().append(':');
+            msg.getOutputBuffer().append(Integer.toHexString(num[j]));
+            msg.getOutputBuffer().append(':');
         }
 
         appendv4((num[6] << 8) | num[7], msg);
@@ -389,14 +389,14 @@ public class EmbeddedIpv4AnonType extends AnonType {
      * @return true, if the message starts with an IPv6 address
      * at the current index, else false
      */
-    private boolean syntax(CurrMsg msg) {
+    private boolean syntax(LogMessage msg) {
         boolean lastSep = false;
         boolean hadAbbrev = false;
         int ipParts = 0;
         int numLen;
-        int buflen = msg.getMsgIn().length();
+        int buflen = msg.getInputMessage().length();
 
-        while (msg.getNprocessed() < buflen) {
+        while (msg.getProcessedChars() < buflen) {
             numLen = validHexVal(msg);
             if (numLen > 0) {  //found a valid num
                 if ((ipParts == 6 && hadAbbrev) || ipParts > 6) { /*has to be 6 since first part of IPv4
@@ -421,9 +421,9 @@ public class EmbeddedIpv4AnonType extends AnonType {
                 if (lastSep || (ipParts == 0 && hadAbbrev) || (ipParts <= 6 && !hadAbbrev)) {
                     return false;
                 }
-                v4Start = findV4Start(msg, msg.getNprocessed() - 1);
+                v4Start = findV4Start(msg, msg.getProcessedChars() - 1);
                 if (syntaxV4(msg)) {
-                    msg.addNprocessed(v4Len - (msg.getNprocessed() - v4Start));
+                    msg.increaseProcessedChars(v4Len - (msg.getProcessedChars() - v4Start));
                     return true;
                 } else {
                     return false;
@@ -445,7 +445,7 @@ public class EmbeddedIpv4AnonType extends AnonType {
      * @param msg is the currently worked on message
      * @param num is the address
      */
-    private void findIP(CurrMsg msg, Ipv6 num) {
+    private void findIP(LogMessage msg, Ipv6 num) {
         Ipv6 ip = hash.get(num);
         if (ip == null) {
             ip = new Ipv6();
@@ -464,7 +464,7 @@ public class EmbeddedIpv4AnonType extends AnonType {
      * @param msg is the message to anonymize
      */
     @Override
-    public void anon(CurrMsg msg) {
+    public void anon(LogMessage msg) {
         v4Len = 0;
         v4Start = 0;
         if (syntax(msg)) {
@@ -476,7 +476,7 @@ public class EmbeddedIpv4AnonType extends AnonType {
                 appendIP(ip, msg);
             }
         } else {
-            msg.setNprocessed(0);
+            msg.setProcessedChars(0);
         }
     }
 

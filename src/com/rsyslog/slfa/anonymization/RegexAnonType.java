@@ -1,6 +1,6 @@
 package com.rsyslog.slfa.anonymization;
 
-import com.rsyslog.slfa.model.CurrMsg;
+import com.rsyslog.slfa.model.LogMessage;
 
 import java.util.Hashtable;
 import java.util.Properties;
@@ -66,25 +66,25 @@ public class RegexAnonType extends AnonType {
      *
      * @param msg is the message
      */
-    private void appendEnd(CurrMsg msg) {
+    private void appendEnd(LogMessage msg) {
         switch (mode) {
             case RANDOM:
                 if (cons) {
-                    String foundRegex = msg.getMsgIn().substring(msg.getCurrIdx(), msg.getCurrIdx() + msg.getNprocessed());
+                    String foundRegex = msg.getInputMessage().substring(msg.getCurrentIndex(), msg.getCurrentIndex() + msg.getProcessedChars());
                     if (hash.containsKey(foundRegex)) {
-                        msg.getMsgOut().append(hash.get(foundRegex));
+                        msg.getOutputBuffer().append(hash.get(foundRegex));
                     } else {
                         StringBuffer anonRegex = new StringBuffer();
-                        randomizeRegex(msg.getMsgIn(), msg.getNprocessed(), msg.getRand(), msg.getCurrIdx(), anonRegex);
+                        randomizeRegex(msg.getInputMessage(), msg.getProcessedChars(), msg.getRand(), msg.getCurrentIndex(), anonRegex);
                         hash.put(foundRegex, anonRegex);
-                        msg.getMsgOut().append(anonRegex);
+                        msg.getOutputBuffer().append(anonRegex);
                     }
                 } else {
-                    randomizeRegex(msg.getMsgIn(), msg.getNprocessed(), msg.getRand(), msg.getCurrIdx(), msg.getMsgOut());
+                    randomizeRegex(msg.getInputMessage(), msg.getProcessedChars(), msg.getRand(), msg.getCurrentIndex(), msg.getOutputBuffer());
                 }
                 break;
             case REPLACE:
-                msg.getMsgOut().append(replace);
+                msg.getOutputBuffer().append(replace);
                 break;
         }
     }
@@ -95,21 +95,21 @@ public class RegexAnonType extends AnonType {
      *
      * @param msg is the message to anonymize
      */
-    private void real_anon(CurrMsg msg) {
-        if (msg.getCurrIdx() == 0) {
+    private void real_anon(LogMessage msg) {
+        if (msg.getCurrentIndex() == 0) {
             lastStart = -1;
         }
-        Matcher m = match.matcher(msg.getMsgIn());
-        if (lastStart < msg.getCurrIdx()) {
-            if (m.find(msg.getCurrIdx())) {
+        Matcher m = match.matcher(msg.getInputMessage());
+        if (lastStart < msg.getCurrentIndex()) {
+            if (m.find(msg.getCurrentIndex())) {
                 lastStart = m.start();
                 end = m.end();
             }
         }
-        if (lastStart > msg.getCurrIdx() || lastStart == -1) {
+        if (lastStart > msg.getCurrentIndex() || lastStart == -1) {
             return;
-        } else if (lastStart == msg.getCurrIdx()) {
-            msg.setNprocessed(end - lastStart);
+        } else if (lastStart == msg.getCurrentIndex()) {
+            msg.setProcessedChars(end - lastStart);
             appendEnd(msg);
         }
     }
@@ -122,7 +122,7 @@ public class RegexAnonType extends AnonType {
      * @param msg is the message to anonymize
      */
     @Override
-    public void anon(CurrMsg msg) {
+    public void anon(LogMessage msg) {
         if (jumpover) {
             return;
         } else {
