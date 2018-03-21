@@ -10,10 +10,15 @@ import java.util.ArrayList;
 public class Main {
 
     public static void main(String[] args) throws IOException {
+        boolean stdinInput = System.getenv("LOGANONYMIZER_READ_FROM_STDIN") != null || System.getProperty("stdin") != null;
         String configFile;
 
-        System.err.println("slfa version 1. Copyright 2017 Jan Gerhards");
-        System.err.println("doc and more info: https://github.com/jgerhards/SLFA");
+        // Exit if no arguments given and input not coming from stdin
+        if (args.length == 0 && !stdinInput) {
+            System.out.println("slfa version 1. Copyright 2017 Jan Gerhards");
+            System.out.println("doc and more info: https://github.com/jgerhards/SLFA");
+            System.exit(1);
+        }
         Config config = new Config();
 
         configFile = System.getProperty("configfile");
@@ -36,7 +41,7 @@ public class Main {
             LogFile current = new LogFile(args[i], typelist);
             current.anon();
         }
-        if (System.getenv("LOGANONYMIZER_READ_FROM_STDIN") != null || System.getProperty("stdin") != null) {
+        if (stdinInput) {
             if (args.length > 0) {
                 System.out.println("\n\n");
             }

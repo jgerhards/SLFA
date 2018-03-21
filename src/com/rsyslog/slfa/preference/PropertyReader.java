@@ -29,7 +29,7 @@ public class PropertyReader {
 
             return result;
         } catch (Exception e) {
-            System.out.println("Exception: " + e);
+            System.err.println("Exception: " + e);
         } finally {
             inputStream.close();
         }

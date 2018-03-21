@@ -173,7 +173,7 @@ public class RegexAnonymizer implements Anonymizer {
         if (var != null) {
             match = Pattern.compile(var);
         } else {
-            System.out.println("no regular expression (regex[NUMBER_OF_REGEX].in) configured for regex[" + num + "], will be ignored");
+            System.err.println("no regular expression (regex[NUMBER_OF_REGEX].in) configured for regex[" + num + "], will be ignored");
             jumpover = true;
         }
 

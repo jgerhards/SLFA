@@ -25,7 +25,7 @@ public class LogFile {
         try {
             fr = new FileReader(path);
         } catch (FileNotFoundException e) {
-            System.out.println("Error: File not readable: " + path);
+            System.err.println("Error: File not readable: " + path);
             System.exit(1);
         }
         init(fr, typelist);
@@ -83,7 +83,7 @@ public class LogFile {
                     }
                 }
             }
-            msg.endMsg();
+            msg.finishMessage();
         }
         try {
             if (fileRd != null) {

@@ -236,7 +236,7 @@ public class Ipv4Anonymizer implements Anonymizer {
         }
 
         if (bits < 1 || bits > 32) {
-            System.out.println("preference error: invalid number of ipv4.bits (" + bits + "), corrected to 32");
+            System.err.println("preference error: invalid number of ipv4.bits (" + bits + "), corrected to 32");
             bits = 32;
         }
 

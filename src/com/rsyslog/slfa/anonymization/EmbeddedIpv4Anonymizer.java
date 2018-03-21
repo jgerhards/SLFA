@@ -315,7 +315,7 @@ public class EmbeddedIpv4Anonymizer implements Anonymizer {
                 }
                 break;
             default:
-                System.out.println("error: unexpected code reached");
+                System.err.println("error: unexpected code reached");
         }
     }
 
@@ -495,7 +495,7 @@ public class EmbeddedIpv4Anonymizer implements Anonymizer {
         }
 
         if (bits < 1 || bits > 128) {
-            System.out.println("preference error: invalid number of ipv4.bits (" + bits + "), corrected to 128");
+            System.err.println("preference error: invalid number of ipv4.bits (" + bits + "), corrected to 128");
             bits = 128;
         }
 

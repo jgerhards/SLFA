@@ -48,14 +48,14 @@ public class Config {
                 list.add(new EmbeddedIpv4Anonymizer());
             } else if (split[i].equals("regex")) {
                 i++;
-                if(i < splitnum) {
-                	int numreg = Integer.parseUnsignedInt(split[i]);
-                	list.add(new RegexAnonymizer(numreg));
+                if (i < splitnum) {
+                    int numreg = Math.max(Integer.parseInt(split[i]), 0);
+                    list.add(new RegexAnonymizer(numreg));
                 } else {
-                	System.out.println("error: last regexanonymizer must be assigned a number");
+                    System.err.println("error: last regexanonymizer must be assigned a number");
                 }
             } else {
-                System.out.println("error: unknown anonymization type '" + split[i] + "' ignored");
+                System.err.println("error: unknown anonymization type '" + split[i] + "' ignored");
             }
         }
         list.add(new NoneAnonymizer());
@@ -77,7 +77,7 @@ public class Config {
     public ArrayList<Anonymizer> getTypes() throws IOException {
         Properties prop = null;
         if (filepath == null) {
-            System.out.println("preference error: no file specified as preference file, program will exit");
+            System.err.println("preference error: no file specified as preference file, program will exit");
             return null;
         }
         try {
@@ -86,7 +86,7 @@ public class Config {
             prop.load(inputStream);
             return readConfigFile(prop);
         } catch (Exception e) {
-            System.out.println("Error opening configuration file (" + filepath + "), program will exit");
+            System.err.println("Error opening configuration file (" + filepath + "), program will exit");
             return null;
         } finally {
             if (inputStream != null) {
