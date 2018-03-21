@@ -14,7 +14,6 @@ import java.util.Random;
 public class LogFile {
     private BufferedReader fileRd;
     private ArrayList<AnonType> list;
-    private Random rand;
 
     /**
      * default constructor for a LogFile with an filepath as parameter
@@ -57,48 +56,44 @@ public class LogFile {
             list.get(i).onFileStart();
         }
         fileRd = new BufferedReader(reader);
-        rand = new Random(System.currentTimeMillis());
+    }
+
+    private String readLineFromInput() {
+        try {
+            return fileRd.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
      * anonymizes the log file and prints the anonymized file to StdOut
      */
     public void anon() {
-        StringBuffer output = new StringBuffer();
-        String msgIn = null;
-        CurrMsg msg = new CurrMsg();
+        String line;
+        LogMessage msg = new LogMessage();
         int listsize = list.size();
 
-        msg.setRand(rand);
-        msg.setMsgOut(output);
-        try {
-            msgIn = fileRd.readLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        while (msgIn != null) {
-            msg.setMsgIn(msgIn);
-            msg.setCurrIdx(0);
-            int msglen = msgIn.length();
-            while (msg.getCurrIdx() < msglen) {
-                msg.setNprocessed(0);
+        while ((line = readLineFromInput()) != null) {
+            msg.setInputMessage(line);
+            int msglen = line.length();
+            while (msg.getCurrentIndex() < msglen) {
+                msg.setProcessedChars(0);
                 for (int j = 0; j < listsize; j++) {
                     list.get(j).anon(msg);
-                    if (msg.getNprocessed() > 0) {
-                        msg.setCurrIdx(msg.getCurrIdx() + msg.getNprocessed());
+                    if (msg.getProcessedChars() > 0) {
+                        msg.setCurrentIndex(msg.getCurrentIndex() + msg.getProcessedChars());
                         break;
                     }
                 }
             }
             msg.endMsg();
-            try {
-                msgIn = fileRd.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
         try {
-            fileRd.close();
+            if (fileRd != null) {
+                fileRd.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

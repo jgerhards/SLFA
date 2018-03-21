@@ -1,6 +1,6 @@
 package com.rsyslog.slfa.anonymization;
 
-import com.rsyslog.slfa.model.CurrMsg;
+import com.rsyslog.slfa.model.LogMessage;
 
 import java.util.Properties;
 
@@ -27,7 +27,7 @@ public abstract class AnonType {
      * anonymizes the message if it matches the anonymization type
      * starting at the index and adds the anonymized part to msgOut
      */
-    public abstract void anon(CurrMsg msg);
+    public abstract void anon(LogMessage msg);
 
     /**
      * reads the parameters for the type out of the preference file

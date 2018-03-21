@@ -1,6 +1,6 @@
 package com.rsyslog.slfa.anonymization;
 
-import com.rsyslog.slfa.model.CurrMsg;
+import com.rsyslog.slfa.model.LogMessage;
 
 import java.util.Properties;
 
@@ -18,9 +18,9 @@ public class NoneAnonType extends AnonType {
      * @param msg is the message
      */
     @Override
-    public void anon(CurrMsg msg) {
-        msg.getMsgOut().append(msg.getMsgIn().charAt(msg.getCurrIdx()));
-        msg.setNprocessed(1);
+    public void anon(LogMessage msg) {
+        msg.getOutputBuffer().append(msg.getInputMessage().charAt(msg.getCurrentIndex()));
+        msg.setProcessedChars(1);
     }
 
     /**
