@@ -1,6 +1,6 @@
 package com.rsyslog.slfa;
 
-import com.rsyslog.slfa.anonymization.AnonType;
+import com.rsyslog.slfa.anonymization.Anonymizer;
 import com.rsyslog.slfa.model.LogFile;
 import com.rsyslog.slfa.preference.Config;
 
@@ -24,7 +24,7 @@ public class Main {
             config.setFilepath(configFile);
         }
 
-        ArrayList<AnonType> typelist = config.getTypes();
+        ArrayList<Anonymizer> typelist = config.getTypes();
         if (typelist == null) {
             return;
         }

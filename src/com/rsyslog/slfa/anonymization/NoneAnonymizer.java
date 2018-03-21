@@ -9,7 +9,7 @@ import java.util.Properties;
  *
  * @author Jan Gerhards
  */
-public class NoneAnonType extends AnonType {
+public class NoneAnonymizer implements Anonymizer {
 
 
     /**
@@ -18,7 +18,7 @@ public class NoneAnonType extends AnonType {
      * @param msg is the message
      */
     @Override
-    public void anon(LogMessage msg) {
+    public void anonymize(LogMessage msg) {
         msg.getOutputBuffer().append(msg.getInputMessage().charAt(msg.getCurrentIndex()));
         msg.setProcessedChars(1);
     }

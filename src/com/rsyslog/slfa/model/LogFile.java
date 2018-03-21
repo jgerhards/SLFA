@@ -1,10 +1,9 @@
 package com.rsyslog.slfa.model;
 
-import com.rsyslog.slfa.anonymization.AnonType;
+import com.rsyslog.slfa.anonymization.Anonymizer;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Random;
 
 /**
  * class to anonymize log files
@@ -13,7 +12,7 @@ import java.util.Random;
  */
 public class LogFile {
     private BufferedReader fileRd;
-    private ArrayList<AnonType> list;
+    private ArrayList<Anonymizer> list;
 
     /**
      * default constructor for a LogFile with an filepath as parameter
@@ -21,7 +20,7 @@ public class LogFile {
      * @param path     is the path to the log file
      * @param typelist is a list of anonymization anonymization
      */
-    public LogFile(String path, ArrayList<AnonType> typelist) {
+    public LogFile(String path, ArrayList<Anonymizer> typelist) {
         FileReader fr = null;
         try {
             fr = new FileReader(path);
@@ -38,7 +37,7 @@ public class LogFile {
      * @param input    an InputStream
      * @param typelist is a list of anonymization anonymization
      */
-    public LogFile(InputStream input, ArrayList<AnonType> typelist) {
+    public LogFile(InputStream input, ArrayList<Anonymizer> typelist) {
         InputStreamReader isr = new InputStreamReader(input);
         init(isr, typelist);
     }
@@ -49,12 +48,8 @@ public class LogFile {
      * @param reader   reader to be set
      * @param typelist is a list of anonymization anonymization
      */
-    private void init(InputStreamReader reader, ArrayList<AnonType> typelist) {
+    private void init(InputStreamReader reader, ArrayList<Anonymizer> typelist) {
         list = typelist;
-        int listsize = list.size();
-        for (int i = 0; i < listsize; i++) {
-            list.get(i).onFileStart();
-        }
         fileRd = new BufferedReader(reader);
     }
 
@@ -81,7 +76,7 @@ public class LogFile {
             while (msg.getCurrentIndex() < msglen) {
                 msg.setProcessedChars(0);
                 for (int j = 0; j < listsize; j++) {
-                    list.get(j).anon(msg);
+                    list.get(j).anonymize(msg);
                     if (msg.getProcessedChars() > 0) {
                         msg.setCurrentIndex(msg.getCurrentIndex() + msg.getProcessedChars());
                         break;

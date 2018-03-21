@@ -3,7 +3,6 @@ package com.rsyslog.slfa.preference;
 import com.rsyslog.slfa.anonymization.*;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -26,8 +25,8 @@ public class Config {
      * @param prop is the property to read out of
      * @return an ArrayList of all anonymization anonymization
      */
-    private ArrayList<AnonType> readConfigFile(Properties prop) {
-        ArrayList<AnonType> list = new ArrayList<AnonType>();
+    private ArrayList<Anonymizer> readConfigFile(Properties prop) {
+        ArrayList<Anonymizer> list = new ArrayList<Anonymizer>();
         String types = prop.getProperty("anonymizer");
         String[] split = types.split(" ");
         int splitnum = split.length;
@@ -42,16 +41,16 @@ public class Config {
         }
         for (int i = 0; i < splitnum; i++) {
             if (split[i].equals("ipv4")) {
-                list.add(new Ipv4AnonType());
+                list.add(new Ipv4Anonymizer());
             } else if (split[i].equals("ipv6")) {
-                list.add(new Ipv6AnonType());
+                list.add(new Ipv6Anonymizer());
             } else if (split[i].equals("embeddedipv4")) {
-                list.add(new EmbeddedIpv4AnonType());
+                list.add(new EmbeddedIpv4Anonymizer());
             } else if (split[i].equals("regex")) {
                 i++;
                 if(i < splitnum) {
                 	int numreg = Integer.parseUnsignedInt(split[i]);
-                	list.add(new RegexAnonType(numreg));
+                	list.add(new RegexAnonymizer(numreg));
                 } else {
                 	System.out.println("error: last regexanonymizer must be assigned a number");
                 }
@@ -59,7 +58,7 @@ public class Config {
                 System.out.println("error: unknown anonymization type '" + split[i] + "' ignored");
             }
         }
-        list.add(new NoneAnonType());
+        list.add(new NoneAnonymizer());
 
         int listLen = list.size();
         for (int i = 0; i < listLen; i++) {
@@ -75,7 +74,7 @@ public class Config {
      * @return an ArrayList of anonymization anonymization
      * @throws IOException
      */
-    public ArrayList<AnonType> getTypes() throws IOException {
+    public ArrayList<Anonymizer> getTypes() throws IOException {
         Properties prop = null;
         if (filepath == null) {
             System.out.println("preference error: no file specified as preference file, program will exit");
