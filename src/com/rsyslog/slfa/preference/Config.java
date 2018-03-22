@@ -26,7 +26,7 @@ public class Config {
      * @return an ArrayList of all anonymization anonymization
      */
     private ArrayList<Anonymizer> readConfigFile(Properties prop) {
-        ArrayList<Anonymizer> list = new ArrayList<Anonymizer>();
+        ArrayList<Anonymizer> list = new ArrayList<>();
         String types = prop.getProperty("anonymizer");
         String[] split = types.split(" ");
         int splitnum = split.length;
@@ -40,29 +40,34 @@ public class Config {
             }
         }
         for (int i = 0; i < splitnum; i++) {
-            if (split[i].equals("ipv4")) {
-                list.add(new Ipv4Anonymizer());
-            } else if (split[i].equals("ipv6")) {
-                list.add(new Ipv6Anonymizer());
-            } else if (split[i].equals("embeddedipv4")) {
-                list.add(new EmbeddedIpv4Anonymizer());
-            } else if (split[i].equals("regex")) {
-                i++;
-                if (i < splitnum) {
-                    int numreg = Math.max(Integer.parseInt(split[i]), 0);
-                    list.add(new RegexAnonymizer(numreg));
-                } else {
-                    System.err.println("error: last regexanonymizer must be assigned a number");
-                }
-            } else {
-                System.err.println("error: unknown anonymization type '" + split[i] + "' ignored");
+            switch (split[i]) {
+                case "ipv4":
+                    list.add(new Ipv4Anonymizer());
+                    break;
+                case "ipv6":
+                    list.add(new Ipv6Anonymizer());
+                    break;
+                case "embeddedipv4":
+                    list.add(new EmbeddedIpv4Anonymizer());
+                    break;
+                case "regex":
+                    i++;
+                    if (i < splitnum) {
+                        int numreg = Math.max(Integer.parseInt(split[i]), 0);
+                        list.add(new RegexAnonymizer(numreg));
+                    } else {
+                        System.err.println("error: last regexanonymizer must be assigned a number");
+                    }
+                    break;
+                default:
+                    System.err.println("error: unknown anonymization type '" + split[i] + "' ignored");
+                    break;
             }
         }
         list.add(new NoneAnonymizer());
 
-        int listLen = list.size();
-        for (int i = 0; i < listLen; i++) {
-            list.get(i).getConfig(prop);
+        for (Anonymizer aList : list) {
+            aList.getConfig(prop);
         }
         return list;
     }
@@ -75,7 +80,7 @@ public class Config {
      * @throws IOException
      */
     public ArrayList<Anonymizer> getTypes() throws IOException {
-        Properties prop = null;
+        Properties prop;
         if (filepath == null) {
             System.err.println("preference error: no file specified as preference file, program will exit");
             return null;

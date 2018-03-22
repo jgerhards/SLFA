@@ -15,13 +15,12 @@ public class Ipv4Anonymizer implements Anonymizer {
 
     private enum ipv4mode {ZERO, RANDOM}
 
-    ;
     private ipv4mode mode;
     private boolean cons;
     private int bits;
-    Hashtable<Integer, Integer> hash;
+    private Hashtable<Integer, Integer> hash;
 
-    private int[] ipParts;
+    private final int[] ipParts;
 
 
     /**
@@ -125,7 +124,7 @@ public class Ipv4Anonymizer implements Anonymizer {
      * @return the anonymized address as an integer
      */
     private int codeInt(int num, Random rand) {
-        int randomNum = 0;
+        int randomNum;
 
         if (bits == 32) {
             num = 0;
@@ -180,7 +179,7 @@ public class Ipv4Anonymizer implements Anonymizer {
      * @param msg is the currently worked on message
      */
     private void findIP(int num, LogMessage msg) {
-        Integer ip = (Integer) hash.get(num);
+        Integer ip = hash.get(num);
         if (ip == null) {
             ip = codeInt(num, msg.getRand());
             hash.put(num, ip);
@@ -253,7 +252,7 @@ public class Ipv4Anonymizer implements Anonymizer {
         }
 
         if (cons) {
-            hash = new Hashtable<Integer, Integer>();
+            hash = new Hashtable<>();
         }
     }
 

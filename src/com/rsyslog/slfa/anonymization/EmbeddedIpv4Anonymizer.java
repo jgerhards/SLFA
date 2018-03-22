@@ -20,7 +20,7 @@ public class EmbeddedIpv4Anonymizer implements Anonymizer {
     private boolean cons;
     private int bits;
 
-    Hashtable<Ipv6, Ipv6> hash;
+    private Hashtable<Ipv6, Ipv6> hash;
     private int[] ipParts;
     private int v4Start;
     private int v4Len;
@@ -224,7 +224,6 @@ public class EmbeddedIpv4Anonymizer implements Anonymizer {
         int dots = 0;
         int val;
         int i;
-        int iplen = msg.getProcessedChars();
 
         for (i = msg.getCurrentIndex(); i < v4Start && dots < 2; i++) {
             val = getHexVal(msg.getInputMessage().charAt(i));
@@ -280,7 +279,6 @@ public class EmbeddedIpv4Anonymizer implements Anonymizer {
      * anonymizes an ip address
      *
      * @param ip is the address to anonymize represented as an Ipv6
-     * @return the anonymized address as an Ipv6
      */
     private void code_ipv6_int(Ipv6 ip, LogMessage msg) {
         Random rand = msg.getRand();
@@ -307,11 +305,11 @@ public class EmbeddedIpv4Anonymizer implements Anonymizer {
                     ip.setLow(rand.nextLong());
                 } else if (bitscpy > 64) {
                     ip.setLow(rand.nextLong());
-                    ip.setHigh(ip.getHigh() | (rand.nextLong() & ((1l << (bitscpy - 64)) - 1)));
+                    ip.setHigh(ip.getHigh() | (rand.nextLong() & ((1L << (bitscpy - 64)) - 1)));
                 } else if (bitscpy == 64) {
                     ip.setLow(rand.nextLong());
                 } else {
-                    ip.setLow(ip.getLow() | (rand.nextLong() & ((1l << bitscpy) - 1)));
+                    ip.setLow(ip.getLow() | (rand.nextLong() & ((1L << bitscpy) - 1)));
                 }
                 break;
             default:
@@ -512,7 +510,7 @@ public class EmbeddedIpv4Anonymizer implements Anonymizer {
         }
 
         if (cons) {
-            hash = new Hashtable<Ipv6, Ipv6>();
+            hash = new Hashtable<>();
         }
     }
 

@@ -75,14 +75,9 @@ public class Ipv6 {
 
 
     public boolean equals(Object cmp) {
-    	if(!(cmp instanceof Ipv6)) {
-    		return false;
-    	}
-        if (this.getHigh() == ((Ipv6) cmp).getHigh() && this.getLow() == ((Ipv6) cmp).getLow()) {
-            return true;
-        } else {
-            return false;
-        }
+        return cmp instanceof Ipv6
+                && this.getHigh() == ((Ipv6) cmp).getHigh()
+                && this.getLow() == ((Ipv6) cmp).getLow();
     }
 
     @Override
