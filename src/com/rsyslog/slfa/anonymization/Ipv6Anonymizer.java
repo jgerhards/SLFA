@@ -13,7 +13,7 @@ import java.util.Random;
  *
  * @author Jan Gerhards
  */
-public class Ipv6AnonType extends AnonType {
+public class Ipv6Anonymizer implements Anonymizer {
 
     private enum anonmode {ZERO, RANDOM}
 
@@ -270,7 +270,7 @@ public class Ipv6AnonType extends AnonType {
                 }
                 break;
             default:
-                System.out.println("error: unexpected code reached");
+                System.err.println("error: unexpected code reached");
         }
     }
 
@@ -340,7 +340,7 @@ public class Ipv6AnonType extends AnonType {
      * @param msg is the message to anonymize
      */
     @Override
-    public void anon(LogMessage msg) {
+    public void anonymize(LogMessage msg) {
         if (syntax(msg)) {
             Ipv6 ip = ip2int(msg);
             if (cons) {
@@ -370,7 +370,7 @@ public class Ipv6AnonType extends AnonType {
         }
 
         if (bits < 1 || bits > 128) {
-            System.out.println("preference error: invalid number of ipv4.bits (" + bits + "), corrected to 128");
+            System.err.println("preference error: invalid number of ipv4.bits (" + bits + "), corrected to 128");
             bits = 128;
         }
 
@@ -395,7 +395,7 @@ public class Ipv6AnonType extends AnonType {
     /**
      * default constructor, initializes defaults
      */
-    public Ipv6AnonType() {
+    public Ipv6Anonymizer() {
         bits = 96;
         mode = anonmode.ZERO;
         cons = false;

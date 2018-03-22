@@ -104,7 +104,7 @@ public class LogMessage {
     /**
      * prints the anonymized message on StdOut and deletes the output buffer
      */
-    public void endMsg() {
+    public void finishMessage() {
         System.out.println(_outputBuffer);
         if (_outputBuffer.length() > 0) {
             _outputBuffer.delete(0, _outputBuffer.length());

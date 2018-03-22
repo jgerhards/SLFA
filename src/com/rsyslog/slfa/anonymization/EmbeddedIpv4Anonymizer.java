@@ -1,7 +1,7 @@
 package com.rsyslog.slfa.anonymization;
 
-import com.rsyslog.slfa.model.LogMessage;
 import com.rsyslog.slfa.model.Ipv6;
+import com.rsyslog.slfa.model.LogMessage;
 
 import java.util.Hashtable;
 import java.util.Properties;
@@ -13,10 +13,9 @@ import java.util.Random;
  *
  * @author Jan Gerhards
  */
-public class EmbeddedIpv4AnonType extends AnonType {
+public class EmbeddedIpv4Anonymizer implements Anonymizer {
     private enum anonmode {ZERO, RANDOM}
 
-    ;
     private anonmode mode;
     private boolean cons;
     private int bits;
@@ -135,7 +134,7 @@ public class EmbeddedIpv4AnonType extends AnonType {
      * @param msg is the message
      * @return the length of the hexadecimal number; also -1 if the first character is ':' or -2 if it is '.'
      */
-    private int validHexVal(LogMessage msg) { //please note: this is a similar function to the one in Ipv6AnonType, but not the same
+    private int validHexVal(LogMessage msg) { //please note: this is a similar function to the one in Ipv6Anonymizer, but not the same
         int buflen = msg.getInputMessage().length();
         int idx = msg.getCurrentIndex() + msg.getProcessedChars();
         int cyc = 0;
@@ -316,7 +315,7 @@ public class EmbeddedIpv4AnonType extends AnonType {
                 }
                 break;
             default:
-                System.out.println("error: unexpected code reached");
+                System.err.println("error: unexpected code reached");
         }
     }
 
@@ -464,7 +463,7 @@ public class EmbeddedIpv4AnonType extends AnonType {
      * @param msg is the message to anonymize
      */
     @Override
-    public void anon(LogMessage msg) {
+    public void anonymize(LogMessage msg) {
         v4Len = 0;
         v4Start = 0;
         if (syntax(msg)) {
@@ -496,7 +495,7 @@ public class EmbeddedIpv4AnonType extends AnonType {
         }
 
         if (bits < 1 || bits > 128) {
-            System.out.println("preference error: invalid number of ipv4.bits (" + bits + "), corrected to 128");
+            System.err.println("preference error: invalid number of ipv4.bits (" + bits + "), corrected to 128");
             bits = 128;
         }
 
@@ -521,7 +520,7 @@ public class EmbeddedIpv4AnonType extends AnonType {
     /**
      * default constructor, initializes defaults
      */
-    public EmbeddedIpv4AnonType() {
+    public EmbeddedIpv4Anonymizer() {
         v4Len = 0;
         v4Start = 0;
         bits = 96;

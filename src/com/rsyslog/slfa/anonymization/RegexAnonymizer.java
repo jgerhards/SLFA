@@ -14,10 +14,8 @@ import java.util.regex.Pattern;
  *
  * @author Jan Gerhards
  */
-public class RegexAnonType extends AnonType {
+public class RegexAnonymizer implements Anonymizer {
     private enum anonmode {REPLACE, RANDOM}
-
-    ;
 
     private boolean jumpover;  //if no regex is given, ignore type
 
@@ -122,7 +120,7 @@ public class RegexAnonType extends AnonType {
      * @param msg is the message to anonymize
      */
     @Override
-    public void anon(LogMessage msg) {
+    public void anonymize(LogMessage msg) {
         if (jumpover) {
             return;
         } else {
@@ -175,7 +173,7 @@ public class RegexAnonType extends AnonType {
         if (var != null) {
             match = Pattern.compile(var);
         } else {
-            System.out.println("no regular expression (regex[NUMBER_OF_REGEX].in) configured for regex[" + num + "], will be ignored");
+            System.err.println("no regular expression (regex[NUMBER_OF_REGEX].in) configured for regex[" + num + "], will be ignored");
             jumpover = true;
         }
 
@@ -203,7 +201,7 @@ public class RegexAnonType extends AnonType {
     /**
      * default constructor, initializes defaults
      */
-    public RegexAnonType(int name) {
+    public RegexAnonymizer(int name) {
         jumpover = false;
         num = name;
         mode = anonmode.RANDOM;

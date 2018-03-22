@@ -11,7 +11,7 @@ import java.util.Random;
  *
  * @author Jan Gerhards
  */
-public class Ipv4AnonType extends AnonType {
+public class Ipv4Anonymizer implements Anonymizer {
 
     private enum ipv4mode {ZERO, RANDOM}
 
@@ -195,7 +195,7 @@ public class Ipv4AnonType extends AnonType {
      * @param msg is the message to anonymize
      */
     @Override
-    public void anon(LogMessage msg) {
+    public void anonymize(LogMessage msg) {
         int intAddress;
 
         if (syntax(msg)) {
@@ -213,7 +213,7 @@ public class Ipv4AnonType extends AnonType {
     /**
      * default constructor, initializes defaults
      */
-    public Ipv4AnonType() {
+    public Ipv4Anonymizer() {
         ipParts = new int[4];
         bits = 16;
         mode = ipv4mode.ZERO;
@@ -236,7 +236,7 @@ public class Ipv4AnonType extends AnonType {
         }
 
         if (bits < 1 || bits > 32) {
-            System.out.println("preference error: invalid number of ipv4.bits (" + bits + "), corrected to 32");
+            System.err.println("preference error: invalid number of ipv4.bits (" + bits + "), corrected to 32");
             bits = 32;
         }
 
