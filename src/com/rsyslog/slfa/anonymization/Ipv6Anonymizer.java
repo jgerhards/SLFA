@@ -17,11 +17,10 @@ public class Ipv6Anonymizer implements Anonymizer {
 
     private enum anonmode {ZERO, RANDOM}
 
-    ;
     private anonmode mode;
     private boolean cons;
     private int bits;
-    Hashtable<Ipv6, Ipv6> hash;
+    private Hashtable<Ipv6, Ipv6> hash;
 
 
     /**
@@ -123,24 +122,13 @@ public class Ipv6Anonymizer implements Anonymizer {
                 lastSep = true;
             } else {  //no valid num
                 if (lastSep) {
-                    if (lastAbbrev && ipParts < 8) {
-                        return true;
-                    }
-                    return false;
+                    return lastAbbrev && ipParts < 8;
                 }
-                if ((ipParts == 8 && !hadAbbrev) || (ipParts < 8 && hadAbbrev)) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return (ipParts == 8 && !hadAbbrev) || (ipParts < 8 && hadAbbrev);
             }
         }
 
-        if ((!lastSep && (ipParts == 8 && !hadAbbrev)) || (ipParts < 8 && hadAbbrev)) {
-            return true;
-        } else {
-            return false;
-        }
+        return (!lastSep && (ipParts == 8 && !hadAbbrev)) || (ipParts < 8 && hadAbbrev);
     }
 
 
@@ -234,8 +222,6 @@ public class Ipv6Anonymizer implements Anonymizer {
      * anonymizes an ip address
      *
      * @param ip   is the address to anonymize represented as an Ipv6
-     * @param rand is the randomizer
-     * @return the anonymized address as an Ipv6
      */
     private void code_ipv6_int(Ipv6 ip, LogMessage msg) {
         Random rand = msg.getRand();
@@ -262,11 +248,11 @@ public class Ipv6Anonymizer implements Anonymizer {
                     ip.setLow(rand.nextLong());
                 } else if (bitscpy > 64) {
                     ip.setLow(rand.nextLong());
-                    ip.setHigh(ip.getHigh() | (rand.nextLong() & ((1l << (bitscpy - 64)) - 1)));
+                    ip.setHigh(ip.getHigh() | (rand.nextLong() & ((1L << (bitscpy - 64)) - 1)));
                 } else if (bitscpy == 64) {
                     ip.setLow(rand.nextLong());
                 } else {
-                    ip.setLow(ip.getLow() | (rand.nextLong() & ((1l << bitscpy) - 1)));
+                    ip.setLow(ip.getLow() | (rand.nextLong() & ((1L << bitscpy) - 1)));
                 }
                 break;
             default:
@@ -387,7 +373,7 @@ public class Ipv6Anonymizer implements Anonymizer {
         }
 
         if (cons) {
-            hash = new Hashtable<Ipv6, Ipv6>();
+            hash = new Hashtable<>();
         }
     }
 

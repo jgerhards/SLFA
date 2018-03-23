@@ -19,17 +19,17 @@ public class RegexAnonymizer implements Anonymizer {
 
     private boolean jumpover;  //if no regex is given, ignore type
 
-    private int num;
+    private final int num;
     private int lastStart;
     private anonmode mode;
     private String replace;
     private boolean keepNum;
     private boolean keepChar;
     private boolean keepSpChar;
-    Pattern match;
-    int end;
-    boolean cons;
-    Hashtable<String, StringBuffer> hash;
+    private Pattern match;
+    private int end;
+    private boolean cons;
+    private Hashtable<String, StringBuffer> hash;
 
 
     /**
@@ -143,8 +143,7 @@ public class RegexAnonymizer implements Anonymizer {
         for (int i = 0; i < splitnum; i++) {
             char lastChar = split[i].charAt(split[i].length() - 1);
             while (lastChar == ',' || lastChar == ' ' || lastChar == ';') {
-                split[i] = split[i].substring(0, split[i].length() - 1);
-                split[i].trim();
+                split[i] = split[i].substring(0, split[i].length() - 1).trim();
                 lastChar = split[i].charAt(split[i].length() - 1);
             }
             if (split[i].compareTo("num") == 0) {
@@ -193,7 +192,7 @@ public class RegexAnonymizer implements Anonymizer {
             }
         }
         if (cons) {
-            hash = new Hashtable<String, StringBuffer>();
+            hash = new Hashtable<>();
         }
     }
 

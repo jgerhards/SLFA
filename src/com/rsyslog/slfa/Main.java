@@ -39,13 +39,13 @@ public class Main {
                 System.out.println("\n\n");
             }
             LogFile current = new LogFile(args[i], typelist);
-            current.anon();
+            current.anonymize();
         }
         if (stdinInput) {
             if (args.length > 0) {
                 System.out.println("\n\n");
             }
-            new LogFile(System.in, typelist).anon();
+            new LogFile(System.in, typelist).anonymize();
         }
     }
 
